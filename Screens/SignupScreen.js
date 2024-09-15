@@ -1,12 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, TextInput, Button, StyleSheet, Text } from 'react-native';
 import firebase from '../firebaseConfig';
+import { useRoute, useNavigation } from '@react-navigation/native';
 
 
 const SignupScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+
+  const route = useRoute();
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    // If email and password are passed as params, set them in the state
+    if (route.params?.email && route.params?.password) {
+      setEmail(route.params.email);
+      setPassword(route.params.password);
+    }
+  }, [route]);
 
   const handleSignup = async () => {
     try {
@@ -23,7 +35,10 @@ const SignupScreen = () => {
       // Handle successful signup (e.g., navigation)
       console.log('User created:', user);
 
-      // Navigate to the next screen or perform other actions
+      //Login user & navigate to home screen
+      await firebase.auth().signInWithEmailAndPassword(email, password);
+      navigation.navigate('Home');
+
     } catch (error) {
 
       // Handle signup errors

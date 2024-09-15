@@ -1,7 +1,11 @@
 // CreateListScreen.js
 import React, { useState } from 'react';
 import { View, TextInput, Button, Text, StyleSheet, FlatList } from 'react-native';
+import firebase from '../firebaseConfig';
+import { collection, addDoc } from 'firebase/firestore';
 
+const db = firebase.firestore();
+const auth = firebase.auth();
 
 export default function CreateListScreen() {
   const [listName, setListName] = useState('');
@@ -15,8 +19,29 @@ export default function CreateListScreen() {
     }
   };
 
-  const handleCreateList = () => {
-    alert(`List "${listName}" created with ${items.length} items!`);
+  const handleCreateList = async () => {
+    try {
+      const user = auth.currentUser; // Get the current authenticated user
+  
+      if (user) {
+        // Add the list to Firestore with the user's ID
+        const docRef = await addDoc(collection(db, 'checklists'), {
+          title: listName,
+          items,
+          userId: user.uid, // Store the user ID to associate the list with the user
+        });
+  
+        console.log('Document written with ID: ', docRef.id);
+  
+        // Clear the form after successful creation
+        setListName('');
+        setItems([]);
+      } else {
+        console.log('No user is signed in');
+      }
+    } catch (error) {
+      console.error('Error adding document: ', error);
+    }
   };
 
   const renderItem = ({ item }) => (

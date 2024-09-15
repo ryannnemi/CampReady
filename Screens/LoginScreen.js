@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, Text, StyleSheet, Alert } from 'react-native';
 import firebase from '../firebaseConfig';
+import { useNavigation } from '@react-navigation/native';
 
 
 export default function LoginScreen({navigation}) {
@@ -42,14 +43,11 @@ const handleLogin = async () => {
         secureTextEntry
         autoCapitalize="none"
       />
-      <Button 
-        title="Login" onPress={handleLogin} 
-        style={styles.button}
-      />
-      <Button 
-        title="Sign Up" onPress={() => navigation.navigate('Signup')} 
-        style={styles.button}
-        />
+      <View style={styles.buttonContainer}>
+        <Button title="Login" onPress={handleLogin}/>
+        <View style={styles.spacer} /> 
+        <Button title="Sign Up" onPress={() => navigation.navigate('Signup', {email, password })} />
+      </View>
     </View>
   );
 }
@@ -72,8 +70,11 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     borderRadius: 5,
   },
-  button: {
-    marginTop: 20,
-    marginBottom: 20,
+  buttonContainer: {
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  spacer: {
+    marginVertical: 10,
   }
 });

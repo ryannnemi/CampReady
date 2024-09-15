@@ -7,16 +7,11 @@ export default function HomeScreen({navigation}) {
   return (
     <View style={styles.container}>
         <Text style={styles.title}>HomeScreen</Text>
-      <Button
-        title="Create List"
-        onPress={() => navigation.navigate('CreateList')}
-        style={styles.button}
-      />
-      <Button
-        title="View List"
-        onPress={() => navigation.navigate('ViewLists')}
-        style={styles.button}
-      />
+      <View style={styles.buttonContainer}>
+        <Button title="Create List" onPress={() => navigation.navigate('CreateList')}/>
+        <View style={styles.spacer} /> 
+        <Button title="View List" onPress={() => navigation.navigate('ViewLists')}/>
+      </View>
     </View>
   );
 }
@@ -24,7 +19,7 @@ export default function HomeScreen({navigation}) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'top',
     alignItems: 'center',
     padding: 20,
   },
@@ -32,9 +27,11 @@ const styles = StyleSheet.create({
     fontSize: 24,
     marginBottom: 20,
   },
-  button: {
-    marginTop: 20,
-    marginBottom: 20,
-    padding: 20,
+  buttonContainer: {
+    flexDirection: 'column',
+    alignItems: 'center',
   },
+  spacer: {
+    marginVertical: 10,
+  }
 });
