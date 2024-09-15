@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "36346834567",
+    "project_id": "campready-41a9d",
+    "storage_bucket": "campready-41a9d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:36346834567:android:fba0c08cee9c6f8de3d222",
+        "android_client_info": {
+          "package_name": "com.ryann.campready"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "36346834567-1rr21i6jmbc91qhlgs2dt412oenevplm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDWBs2D1zK0HfYJboE5OqSQB0pppDgKJ_c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "36346834567-1rr21i6jmbc91qhlgs2dt412oenevplm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
