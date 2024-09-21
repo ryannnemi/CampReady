@@ -8,6 +8,7 @@ import HomeScreen from './Screens/HomeScreen';
 import CreateListScreen from './Screens/CreateListScreen';
 import ViewListsScreen from './Screens/ViewListsScreen';
 import ListScreen from './Screens/ListScreen';
+import TemplateScreen from './Screens/TemplateScreen';
 import ForgotPasswordScreen from './Screens/ForgotPasswordScreen';
 
 const Stack = createStackNavigator();
@@ -23,6 +24,7 @@ export default function AppNavigator() {
         <Stack.Screen name="CreateList" component={CreateListScreen} />
         <Stack.Screen name="ViewLists" component={ViewListsScreen} />
         <Stack.Screen name="List" component={ListScreen} />
+        <Stack.Screen name="Template" component={TemplateScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
