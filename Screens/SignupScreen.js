@@ -22,7 +22,7 @@ const SignupScreen = () => {
 
   const handleSignup = async () => {
     try {
-      // Validate email and password (optional, but recommended)
+      // Validate email and password
       if (!email || !password) {
         setError('Please enter both email and password.');
         return;
@@ -40,13 +40,17 @@ const SignupScreen = () => {
       navigation.navigate('Home');
 
     } catch (error) {
+        if (error.code === 'auth/email-already-in-use') {
+          setError('User account already exists');
+        } else {
+          setError('An error occurred during signup');
+        }
+    
+        setSuccessMessage('');
+        console.error('Sign up error:', error);       }
 
-      // Handle signup errors
-      console.error(error);
-
-      setError(error.message); // Display error message to user
     }
-  };
+  
 
   return (
     <View>

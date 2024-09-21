@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, Text, StyleSheet, Alert } from 'react-native';
+import { View, TextInput, TouchableOpacity, Button, Text, StyleSheet, Alert } from 'react-native';
 import firebase from '../firebaseConfig';
 import { useNavigation } from '@react-navigation/native';
 
@@ -23,7 +23,6 @@ const handleLogin = async () => {
      }
    }; 
   
-
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Login to CampReady</Text>
@@ -42,12 +41,14 @@ const handleLogin = async () => {
         onChangeText={setPassword}
         secureTextEntry
         autoCapitalize="none"
-      />
-      <View style={styles.buttonContainer}>
-        <Button title="Login" onPress={handleLogin}/>
-        <View style={styles.spacer} /> 
-        <Button title="Sign Up" onPress={() => navigation.navigate('Signup', {email, password })} />
-      </View>
+      />      
+      <Button style={styles.button} title="Login" onPress={handleLogin}/> 
+      <TouchableOpacity style={styles.textButton} onPress={() => navigation.navigate('Signup', {email, password })}>
+        <Text style={styles.textButton}>Sign Up</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.textButton} onPress={() => navigation.navigate('ForgotPassword', { email })}>
+        <Text style={styles.textButton}>Forgot Password?</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -63,6 +64,13 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     textAlign: 'center',
   },
+  text: {
+    fontSize: 14,
+    marginTop: 20,
+    padding: 10,
+    textAlign: 'center',
+    textDecorationLine: 'underline',
+  },
   input: {
     borderWidth: 1,
     borderColor: '#ccc',
@@ -70,11 +78,13 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     borderRadius: 5,
   },
-  buttonContainer: {
-    flexDirection: 'column',
-    alignItems: 'center',
+  button: {
+    borderRadius: 20,
   },
-  spacer: {
-    marginVertical: 10,
+  textButton: {
+    fontSize: 14,
+    marginTop: 10,
+    textAlign: 'center',
+    textDecorationLine: 'underline',
   }
 });
