@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Button, StyleSheet, FlatList, TouchableOpacity, Alert } from 'react-native';
 import firebase from '../firebaseConfig';
 import { getFirestore, collection, query, where, getDocs, doc, deleteDoc } from 'firebase/firestore';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 const db = firebase.firestore();
 const auth = firebase.auth();
@@ -44,7 +45,7 @@ export default function ViewListsScreen({ navigation }) {
     const handleDeleteList = async (listId) => {
       try {
         await deleteDoc(doc(db, 'checklists', listId));
-        setLists(lists.filter((list) => list.id !== listId)); // Update UI after deletion
+        setLists(lists.filter((list) => list.id !== listId));
       } catch (error) {
         console.error('Error deleting list: ', error);
       }
@@ -62,21 +63,19 @@ export default function ViewListsScreen({ navigation }) {
       );
     };
 
-  const renderItem = ({ item }) => (
-    <View style={styles.listItem}>
-      <TouchableOpacity
-        onPress={() => navigation.navigate('List', { listId: item.id, title: item.title })}
-        style={{ flex: 1 }}
-      >
-        <Text style={styles.listItemText}>{item.title}</Text>
-      </TouchableOpacity>
-      <Button
-        title="Delete"
-        onPress={() => confirmDelete(item.id)}
-        color="gray" 
-      />
-    </View>
-  );
+    const renderItem = ({ item }) => (
+      <View style={styles.listItem}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('List', { listId: item.id, title: item.title })}
+          style={{ flex: 1 }}
+        >
+          <Text style={styles.listItemText}>{item.title}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => confirmDelete(item.id)} style={styles.deleteButton}> 
+          <Icon name="trash" size={20} color="gray" />
+        </TouchableOpacity>
+      </View>
+    );
 
   return (
     <View style={styles.container}>

@@ -4,6 +4,7 @@ import { View, TextInput, Button, Text, StyleSheet, FlatList, TouchableOpacity }
 import firebase from '../firebaseConfig';
 import { collection, addDoc } from 'firebase/firestore';
 import Checkbox from 'expo-checkbox';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 const db = firebase.firestore();
 const auth = firebase.auth();
@@ -56,6 +57,11 @@ export default function CreateListScreen({ route, navigation }) {
     setItems(updatedItems);
   };
 
+  const handleDeleteItem = (index) => {
+    const updatedItems = items.filter((_, idx) => idx !== index);
+    setItems(updatedItems);
+  };
+
   const renderItem = ({ item, index }) => (
     <View style={styles.itemContainer}>
       <View style={styles.leftContainer}>
@@ -88,7 +94,7 @@ export default function CreateListScreen({ route, navigation }) {
         )}
       </View>
       <TouchableOpacity onPress={() => handleDeleteItem(index)} style={styles.deleteButton}>
-        <Text style={styles.deleteButtonText}>Delete</Text>
+        <Icon name="trash" size={20} color="gray" />
       </TouchableOpacity>
     </View>
   );
