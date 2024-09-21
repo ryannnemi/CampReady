@@ -7,7 +7,7 @@ import SignupScreen from './Screens/SignupScreen';
 import HomeScreen from './Screens/HomeScreen';
 import CreateListScreen from './Screens/CreateListScreen';
 import ViewListsScreen from './Screens/ViewListsScreen';
-import ListDetailsScreen from './Screens/ListDetailsScreen';
+import ListScreen from './Screens/ListScreen';
 import ForgotPasswordScreen from './Screens/ForgotPasswordScreen';
 
 const Stack = createStackNavigator();
@@ -22,7 +22,7 @@ export default function AppNavigator() {
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="CreateList" component={CreateListScreen} />
         <Stack.Screen name="ViewLists" component={ViewListsScreen} />
-        <Stack.Screen name="ListDetails" component={ListDetailsScreen} />
+        <Stack.Screen name="List" component={ListScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

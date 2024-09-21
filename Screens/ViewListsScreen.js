@@ -1,8 +1,8 @@
 // ViewListsScreen.js
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, Button, StyleSheet, FlatList, TouchableOpacity, Alert } from 'react-native';
 import firebase from '../firebaseConfig';
-import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore';
+import { getFirestore, collection, query, where, getDocs, doc, deleteDoc } from 'firebase/firestore';
 
 const db = firebase.firestore();
 const auth = firebase.auth();
@@ -26,8 +26,6 @@ export default function ViewListsScreen({ navigation }) {
             ...doc.data(),
           }));
   
-          console.log('Fetched Lists:', userLists); // Log fetched data
-  
           setLists(userLists);
         } else {
           console.log('No user is signed in');
@@ -42,17 +40,53 @@ export default function ViewListsScreen({ navigation }) {
     fetchLists();
   }, []);
 
+    // Function to delete a list
+    const handleDeleteList = async (listId) => {
+      try {
+        await deleteDoc(doc(db, 'checklists', listId));
+        setLists(lists.filter((list) => list.id !== listId)); // Update UI after deletion
+      } catch (error) {
+        console.error('Error deleting list: ', error);
+      }
+    };
+  
+    // Confirm before deleting the list
+    const confirmDelete = (listId) => {
+      Alert.alert(
+        "Delete List",
+        "Are you sure you want to delete this list?",
+        [
+          { text: "Cancel", style: "cancel" },
+          { text: "OK", onPress: () => handleDeleteList(listId) }
+        ]
+      );
+    };
+
   const renderItem = ({ item }) => (
-    <TouchableOpacity
-      style={styles.listItem}
-      onPress={() => navigation.navigate('ListDetails', { listId: item.id, title: item.title })}>
-      <Text style={styles.listItemText}>{item.title}</Text>
-    </TouchableOpacity>
+    <View style={styles.listItem}>
+      <TouchableOpacity
+        onPress={() => navigation.navigate('List', { listId: item.id, title: item.title })}
+        style={{ flex: 1 }}
+      >
+        <Text style={styles.listItemText}>{item.title}</Text>
+      </TouchableOpacity>
+      <Button
+        title="Delete"
+        onPress={() => confirmDelete(item.id)}
+        color="gray" 
+      />
+    </View>
   );
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Your Lists</Text>
+      
+      <Button
+        title="Create New List"
+        onPress={() => navigation.navigate('CreateList')}
+      />
+
       {loading ? (
         <Text>Loading...</Text>
       ) : lists.length > 0 ? (
@@ -62,7 +96,7 @@ export default function ViewListsScreen({ navigation }) {
           keyExtractor={(item) => item.id}
         />
       ) : (
-        <Text>No lists available</Text> // If no lists are fetched, display this
+        <Text>No lists available</Text>
       )}
     </View>
   );
@@ -78,6 +112,8 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   listItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
     padding: 15,
     marginVertical: 5,
     backgroundColor: '#f9f9f9',
@@ -85,5 +121,6 @@ const styles = StyleSheet.create({
   },
   listItemText: {
     fontSize: 18,
+    flex: 1, // Take up remaining space
   },
 });

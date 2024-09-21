@@ -8,8 +8,6 @@ export default function HomeScreen({navigation}) {
     <View style={styles.container}>
         <Text style={styles.title}>HomeScreen</Text>
       <View style={styles.buttonContainer}>
-        <Button title="Create List" onPress={() => navigation.navigate('CreateList')}/>
-        <View style={styles.spacer} /> 
         <Button title="View List" onPress={() => navigation.navigate('ViewLists')}/>
       </View>
     </View>
