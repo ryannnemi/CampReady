@@ -53,7 +53,7 @@ const SignupScreen = () => {
   
 
   return (
-    <View>
+    <View style={styles.container}>
       <TextInput
         style={styles.input}
         placeholder="Email"
@@ -94,6 +94,7 @@ const styles = StyleSheet.create({
     button: {
       marginTop: 20,
       marginBottom: 20,
+      borderRadius: 20,
     }
 });
 
