@@ -10,6 +10,7 @@ import ViewListsScreen from './Screens/ViewListsScreen';
 import ListScreen from './Screens/ListScreen';
 import TemplateScreen from './Screens/TemplateScreen';
 import ForgotPasswordScreen from './Screens/ForgotPasswordScreen';
+import ActivityListScreen from './Screens/ActivityListScreen';
 
 const Stack = createStackNavigator();
 
@@ -25,6 +26,7 @@ export default function AppNavigator() {
         <Stack.Screen name="ViewLists" component={ViewListsScreen} />
         <Stack.Screen name="List" component={ListScreen} />
         <Stack.Screen name="Template" component={TemplateScreen} />
+        <Stack.Screen name="Activity" component={ActivityListScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
