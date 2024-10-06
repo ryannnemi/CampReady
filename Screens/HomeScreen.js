@@ -13,6 +13,8 @@ export default function HomeScreen({navigation}) {
         <Button title="Templates" onPress={() => navigation.navigate('Template')}/>
         <View style={styles.spacer} />
         <Button title="Activities" onPress={() => navigation.navigate('Activity')}/>
+        <View style={styles.spacer} />
+        <Button title="Reservations" onPress={() => navigation.navigate('Reservation')}/>
       </View>
     </View>
   );

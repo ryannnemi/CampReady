@@ -11,6 +11,8 @@ import ListScreen from './Screens/ListScreen';
 import TemplateScreen from './Screens/TemplateScreen';
 import ForgotPasswordScreen from './Screens/ForgotPasswordScreen';
 import ActivityListScreen from './Screens/ActivityListScreen';
+import ReservationScreen from './Screens/ReservationScreen';
+import AddReservationScreen from './Screens/AddReservationScreen';
 
 const Stack = createStackNavigator();
 
@@ -27,6 +29,8 @@ export default function AppNavigator() {
         <Stack.Screen name="List" component={ListScreen} />
         <Stack.Screen name="Template" component={TemplateScreen} />
         <Stack.Screen name="Activity" component={ActivityListScreen} />
+        <Stack.Screen name="Reservation" component={ReservationScreen} />
+        <Stack.Screen name="Add Reservation" component={AddReservationScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
