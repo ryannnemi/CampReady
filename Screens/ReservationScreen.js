@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, FlatList, Button, StyleSheet } from 'react-native';
+import { View, Text, TextInput, FlatList, Button, StyleSheet, Alert } from 'react-native';
 import firebase from '../firebaseConfig';
+import Icon from 'react-native-vector-icons/FontAwesome'
+import { format } from 'date-fns'
 
 const db = firebase.firestore();
 const auth = firebase.auth();
@@ -31,7 +33,7 @@ function ReservationScreen({navigation}) {
       
           const userReservations = [];
           querySnapshot.forEach((doc) => {
-            userReservations.push(doc.data());
+            userReservations.push({ id: doc.id, ...doc.data() });
           });
       
           setReservations(userReservations);
@@ -44,14 +46,46 @@ function ReservationScreen({navigation}) {
     if (userEmail) {
       fetchReservations();
     }
-  },);
+  }, [userEmail]);
+
+  const deleteReservation = async (reservationId) => {
+    try {
+      // Show a confirmation dialog before deleting
+      Alert.alert(
+        'Confirm Delete',
+        'Are you sure you want to delete this reservation?',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          {
+            text: 'Delete',
+            style: 'destructive',
+            onPress: async () => {
+              await db.collection('reservations').doc(reservationId).delete();
+              setReservations(reservations.filter((res) => res.id !== reservationId));
+            },
+          },
+        ]
+      );
+    } catch (error) {
+      console.error('Error deleting reservation: ', error);
+    }
+  };
 
   const renderItem = ({ item }) => (
     <View style={styles.item}>
-      <Text style={styles.reservationNumber}>Reservation ID: {item.reservationNumber}</Text>
-      <Text style={styles.locationName}>Location: {item.locationName}</Text>
-      <Text style={styles.locationName}>Campsite: {item.campsiteNumber}</Text>
-      <Text style={styles.date}>Date: {item.date}</Text>
+      <View style={styles.itemContent}>
+        <Text style={styles.reservationNumber}>Reservation ID: {item.reservationNumber}</Text>
+        <Text style={styles.locationName}>Location: {item.locationName}</Text>
+        <Text style={styles.locationName}>Campsite: {item.campsiteNumber}</Text>
+        <Text style={styles.date}>Date: {format(item.startDate, 'MM/dd/yyyy HH:mm')}</Text>
+      </View>
+      <Icon 
+        name="trash" 
+        size={20} 
+        color="gray" 
+        onPress={() => deleteReservation(item.id)} 
+        style={styles.deleteIcon} 
+      />
     </View>
   );
 
@@ -69,7 +103,7 @@ function ReservationScreen({navigation}) {
       <FlatList
         data={reservations}
         renderItem={renderItem}
-        keyExtractor={(item) => item.reservationNumber.toString()} 
+        keyExtractor={(item) => item.id.toString()} 
       />
       <Button title="Add Reservation" onPress={() => navigation.navigate('Add Reservation')} />
     </View>
@@ -87,9 +121,14 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   item: {
+    flexDirection: 'row', 
+    alignItems: 'center',
     padding: 10,
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
+  },
+  itemContent: {
+    flex: 1,
   },
   reservationNumber: {
     fontSize: 16,
@@ -103,6 +142,9 @@ const styles = StyleSheet.create({
   },
   endDate: {
     fontSize: 16,
+  },
+  deleteIcon: {
+    marginLeft: 10,
   },
 });
 

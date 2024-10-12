@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from 'react-native';
 import firebase from '../firebaseConfig';
 import { collection, addDoc } from 'firebase/firestore';
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 const db = firebase.firestore();
 const auth = firebase.auth();
@@ -12,6 +13,36 @@ function AddReservationScreen() {
   const [reservationNumber, setReservationNumber] = useState('');
   const [locationName, setLocationName] = useState('');
   const [notes, setNotes] = useState('');
+
+    // State for date/time pickers
+    const [isStartDatePickerVisible, setStartDatePickerVisibility] = useState(false);
+    const [isEndDatePickerVisible, setEndDatePickerVisibility] = useState(false);
+  
+    const showStartDatePicker = () => {
+      setStartDatePickerVisibility(true);
+    };
+  
+    const hideStartDatePicker = () => {
+      setStartDatePickerVisibility(false);
+    };
+  
+    const handleStartDateConfirm = (date) => {
+      setStartDate(date.toISOString());
+      hideStartDatePicker();
+    };
+  
+    const showEndDatePicker = () => {
+      setEndDatePickerVisibility(true);
+    };
+  
+    const hideEndDatePicker = () => {
+      setEndDatePickerVisibility(false);   
+    };
+  
+    const handleEndDateConfirm = (date) => {
+      setEndDate(date.toISOString());
+      hideEndDatePicker();
+    };
 
   const handleAddReservation = async () => {
     try {
@@ -43,17 +74,36 @@ function AddReservationScreen() {
     <View style={styles.container}>
       <Text style={styles.header}>Add Reservation</Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Start Date (YYYY-MM-DD)"
-        value={startDate}
-        onChangeText={setStartDate}
+      <TouchableOpacity onPress={showStartDatePicker}>
+        <TextInput
+          style={styles.input}
+          placeholder="Start Date and Time"
+          value={startDate}
+          editable={false}
+        />
+      </TouchableOpacity>
+      <DateTimePickerModal
+        isVisible={isStartDatePickerVisible}
+        mode="datetime"
+        onConfirm={handleStartDateConfirm}
+        onCancel={hideStartDatePicker}   
+
       />
-      <TextInput
-        style={styles.input}
-        placeholder="End Date (YYYY-MM-DD)"
-        value={endDate}
-        onChangeText={setEndDate}
+
+      <TouchableOpacity onPress={showEndDatePicker}>
+        <TextInput
+          style={styles.input}
+          placeholder="End Date and Time"
+          value={endDate}
+          editable={false}
+        />
+      </TouchableOpacity>
+      <DateTimePickerModal
+        isVisible={isEndDatePickerVisible}
+        mode="datetime"
+        onConfirm={handleEndDateConfirm}
+        onCancel={hideEndDatePicker}   
+
       />
       <TextInput
         style={styles.input}
