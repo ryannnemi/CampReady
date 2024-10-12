@@ -13,6 +13,7 @@ import ForgotPasswordScreen from './Screens/ForgotPasswordScreen';
 import ActivityListScreen from './Screens/ActivityListScreen';
 import ReservationScreen from './Screens/ReservationScreen';
 import AddReservationScreen from './Screens/AddReservationScreen';
+import ItineraryScreen from './Screens/ItineraryScreen';
 
 const Stack = createStackNavigator();
 
@@ -31,6 +32,7 @@ export default function AppNavigator() {
         <Stack.Screen name="Activity" component={ActivityListScreen} />
         <Stack.Screen name="Reservation" component={ReservationScreen} />
         <Stack.Screen name="Add Reservation" component={AddReservationScreen} />
+        <Stack.Screen name="Itinerary" component={ItineraryScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

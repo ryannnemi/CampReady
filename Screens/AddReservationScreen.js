@@ -7,28 +7,31 @@ const db = firebase.firestore();
 const auth = firebase.auth();
 
 function AddReservationScreen() {
-  const [date, setDate] = useState('');
-  const [campsiteNumber, setCampsiteNumber] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
   const [reservationNumber, setReservationNumber] = useState('');
   const [locationName, setLocationName] = useState('');
+  const [notes, setNotes] = useState('');
 
   const handleAddReservation = async () => {
     try {
       const user = auth.currentUser; 
 
       await addDoc(collection(db, 'reservations'), {
-        date: date,
-        campsiteNumber: campsiteNumber,
+        startDate: startDate,
+        endDate: endDate,
         reservationNumber: reservationNumber,
         locationName: locationName,
+        notes: notes,
         userId: user.uid
       });
 
       // Clear the input fields after adding the reservation
-      setDate('');
-      setCampsiteNumber('');
+      setStartDate('');
+      setEndDate('');
       setReservationNumber('');
       setLocationName('');
+      setNotes('');
 
       console.log('Reservation added to Firestore!');
     } catch (error) {
@@ -42,15 +45,15 @@ function AddReservationScreen() {
 
       <TextInput
         style={styles.input}
-        placeholder="Date (YYYY-MM-DD)"
-        value={date}
-        onChangeText={setDate}
+        placeholder="Start Date (YYYY-MM-DD)"
+        value={startDate}
+        onChangeText={setStartDate}
       />
       <TextInput
         style={styles.input}
-        placeholder="Campsite Number"
-        value={campsiteNumber}
-        onChangeText={setCampsiteNumber}
+        placeholder="End Date (YYYY-MM-DD)"
+        value={endDate}
+        onChangeText={setEndDate}
       />
       <TextInput
         style={styles.input}
@@ -63,6 +66,12 @@ function AddReservationScreen() {
         placeholder="Location Name"
         value={locationName}
         onChangeText={setLocationName}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Notes"
+        value={notes}
+        onChangeText={setNotes}
       />
 
       <Button title="Add Reservation" onPress={handleAddReservation} />
