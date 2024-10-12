@@ -1,182 +1,116 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, Text, FlatList, TextInput, Button, StyleSheet } from 'react-native';
-import axios from 'axios';
+import axios from 'axios';   
 
-function ActivityListScreen() {
-    const [activities, setActivities] = useState([]);
-    const [error, setError] = useState(null);
-    const [facilityName, setFacilityName] = useState('');
-    const [searchQuery, setSearchQuery] = useState(''); 
-    const apiKey = '8ac50029-c1e9-457c-93c5-eeca42881e7b';
-  
-    const fetchActivities = async (facilityId) => { 
-      try {
-        // Fetch facility details
-        const nameResponse = await axios.get(
-          `https://ridb.recreation.gov/api/v1/facilities/${facilityId}`,
-          {
-            headers: {
-              apiKey: apiKey,
-            },
-          }
-        );
-  
-        // Fetch facility activities
-        const response = await axios.get(
-          `https://ridb.recreation.gov/api/v1/facilities/${facilityId}/activities`,
-          {
-            headers: {
-              apiKey: apiKey,
-            },
-          }
-        );
-  
-        setFacilityName(nameResponse.data.FacilityName || 'Facility'); // Handle missing name
-        setActivities(response.data.RECDATA || []); // Ensure activities are properly assigned
-      } catch (error) {
-        setError(error);
-        console.error('Error fetching data:', error);
-      }
-    };
-  
-    const handleSearch = async () => {
-      try {
-        // Search for facilities by name or criteria
-        const response = await axios.get(
-          'https://ridb.recreation.gov/api/v1/facilities', 
-          {
-            headers: {
-              apiKey: apiKey,
-            },
-            params: {
-              query: searchQuery, 
-            },
-          }
-        );
-  
-        // Check if any facilities were found
-        if (response.data.RECDATA && response.data.RECDATA.length > 0) {
-          const firstFacilityId = response.data.RECDATA[0].FacilityID;
-          fetchActivities(firstFacilityId); // Fetch activities for the first facility
-        } else {
-          setError(new Error('No facilities found for the search query.'));
-        }
-      } catch (error) {
-        setError(error);
-        console.error('Error searching facilities:', error);
-      }
-    };
-  
-    const renderItem = ({ item }) => (
-      <View style={styles.item}>
-        <Text style={styles.activityName}>{item.FacilityActivityDescription || 'Activity'}</Text>
-      </View>
-    );
-  
-    if (error) {
-      return (
-        <View style={styles.container}>
-          <Text>Error: {error.message}</Text>
-        </View>
-      );
-    }
-  
-    return (
-      <View style={styles.container}>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter search criteria (e.g., Yosemite National Park)"
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-        />
-        <Button title="Search" onPress={handleSearch} />
-  
-        {activities.length > 0 && ( 
-          <>
-            <Text style={styles.header}>{facilityName}</Text>
-            <FlatList
-              data={activities}
-              renderItem={renderItem}
-              keyExtractor={(item) => item.ActivityID ? item.ActivityID.toString() : Math.random().toString()} // Handle missing ActivityID
-            />
-          </>
-        )}
-      </View>
-    );
-  }
-  
-/*
-import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, StyleSheet } from 'react-native';
-import axios from 'axios';
 
 function ActivityListScreen() {
   const [activities, setActivities] = useState([]);
   const [error, setError] = useState(null);
-  const [facilityName, setFacilityName] = useState([]);
+  const [facilityName, setFacilityName] = useState('');
+  const [searchQuery, setSearchQuery] = useState(''); 
   const apiKey = '8ac50029-c1e9-457c-93c5-eeca42881e7b';
-  const facilityId = '233115';
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const nameResponse = await axios.get(
-            `https://ridb.recreation.gov/api/v1/facilities/${facilityId}`,
+  const handleSearch = async () => {
+    setError(null);
+    try {
+      const response = await axios.get(
+        'https://ridb.recreation.gov/api/v1/recareas',
+        {
+          headers: {
+            apiKey: apiKey,
+          },
+          params: {
+            query: searchQuery,
+          },
+        }
+      );
+  
+      console.log('Full Rec Area Search Response:', response.data);
+  
+      if (response.data.RECDATA && response.data.RECDATA.length > 0) {
+        console.log('Unfiltered Rec Areas:', response.data.RECDATA);
+  
+        // Filter for exact match (case-insensitive)
+        const filteredRecAreas = response.data.RECDATA.filter(recArea =>
+          recArea.RecAreaName && recArea.RecAreaName.toLowerCase().startsWith(searchQuery.toLowerCase())
+        );
+  
+        console.log('Filtered Rec Areas:', filteredRecAreas);
+  
+        if (filteredRecAreas.length > 0) {
+          const firstRecArea = filteredRecAreas[0];
+          const firstRecAreaId = firstRecArea.RecAreaID;
+          setFacilityName(firstRecArea.RecAreaName || 'Rec Area'); // Update variable name if needed
+  
+          console.log('First Rec Area ID:', firstRecAreaId);
+  
+          // Fetch activities for the first rec area
+          const activitiesResponse = await axios.get(
+            `https://ridb.recreation.gov/api/v1/recareas/${firstRecAreaId}/activities`, 
             {
               headers: {
                 apiKey: apiKey,
               },
             }
           );
-        const response = await axios.get(
-          `https://ridb.recreation.gov/api/v1/facilities/${facilityId}/activities`,
-          {
-            headers: {
-              apiKey: apiKey,
-            },
-          }
-        );
-        setFacilityName(nameResponse.data.FacilityName);
-        console.log('Facility Name: ', nameResponse.data.FacilityName);
-
-        setActivities(response.data.RECDATA || []); 
-        console.log('API Response: ', response.data);
-      } catch (error) {
-        setError(error);
-        console.error('Error fetching data:', error);
+  
+          console.log('Activities Response:', activitiesResponse.data);
+          setActivities(activitiesResponse.data.RECDATA || []);
+        } else {
+          setActivities([]);
+          setError(new Error('No recreation areas found with that exact name.'));
+        }
+      } else {
+        setActivities([]);
+        setError(new Error('No recreation areas found for the search query.'));
       }
-    };
-
-    fetchData();
-  }, [facilityId, apiKey]);
+    } catch (error) {
+      setError(error);
+      console.error('Error searching rec areas:', error);
+    }
+  };
 
   const renderItem = ({ item }) => (
     <View style={styles.item}>
-      <Text style={styles.activityName}>{item.FacilityActivityDescription}</Text>
+      <Text style={styles.activityName}>
+        {item.ActivityName 
+          ? item.ActivityName.toLowerCase().replace(/\b\w/g, l => l.toUpperCase()) 
+          : 'Activity'} 
+      </Text>
     </View>
   );
-
-  if (error) {
-    return (
-      <View style={styles.container}>
-        <Text>Error: {error.message}</Text>
-      </View>
-    );
-  }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>{facilityName}</Text>
-      <FlatList
-        data={activities}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.ActivityID.toString()} 
-      />
+      <TextInput
+          style={styles.input}
+          placeholder="Enter search criteria (e.g., Yosemite National Park)"
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+        />
+        <Button title="Search" onPress={handleSearch} />
+
+      {error && <Text style={styles.errorText}>Error: {error.message}</Text>}
+
+      {activities.length > 0 ? ( 
+        <>
+          <Text style={styles.header}>{facilityName}</Text>
+          <FlatList
+            data={activities}
+            renderItem={renderItem}
+            keyExtractor={(item, index) => 
+              item.ActivityID ? item.ActivityID.toString() : index.toString() 
+            } 
+          />
+        </>
+      ) : (
+        searchQuery !== '' && !error && ( // Show "No activities" only after a search
+          <Text>No activities found for your query.</Text> 
+        )
+      )}
     </View>
   );
 }
-
-*/
 
 const styles = StyleSheet.create({
     container: {
