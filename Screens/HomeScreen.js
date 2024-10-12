@@ -15,6 +15,8 @@ export default function HomeScreen({navigation}) {
         <Button title="Activities" onPress={() => navigation.navigate('Activity')}/>
         <View style={styles.spacer} />
         <Button title="Reservations" onPress={() => navigation.navigate('Reservation')}/>
+        <View style={styles.spacer} />
+        <Button title="Itinerary" onPress={() => navigation.navigate('Itinerary')}/>
       </View>
     </View>
   );
