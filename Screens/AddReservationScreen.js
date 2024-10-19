@@ -3,7 +3,7 @@ import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from 'rea
 import firebase from '../firebaseConfig';
 import { collection, addDoc } from 'firebase/firestore';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-import { useNavigation } from '@react-navigation/native'; 
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 
 const db = firebase.firestore();
 const auth = firebase.auth();
@@ -14,7 +14,6 @@ function AddReservationScreen() {
   const [reservationNumber, setReservationNumber] = useState('');
   const [location, setLocation] = useState('');
   const [notes, setNotes] = useState('');
-  const navigation = useNavigation();
 
     // State for date/time pickers
     const [isStartDatePickerVisible, setStartDatePickerVisibility] = useState(false);
@@ -108,13 +107,26 @@ function AddReservationScreen() {
         onConfirm={handleEndDateConfirm}
         onCancel={hideEndDatePicker}
       />
-      <Button 
-        title="Select Location" 
-        onPress={() => navigation.navigate('Location')} 
-      />
-      {location && (
-        <Text>Selected Location: {location.name}</Text>
-      )}
+      <GooglePlacesAutocomplete
+        placeholder='Search for a location'
+        onPress={(data, details = null) => {
+          if (details && details.geometry && details.geometry.location) {
+            const selectedLocation = {
+              name: details.name,
+              address: details.formatted_address,
+              latitude: details.geometry.location.lat,
+              longitude: details.geometry.location.lng 
+            };
+
+            setLocation(selectedLocation);
+          }
+        }}
+        query={{
+          key: 'AIzaSyCgOZfEz_a58wrMoHliVwght6Bu1AznFzo',
+          language: 'en',
+        }}
+        fetchDetails={true}         
+        />
       <TextInput
         style={styles.input}
         placeholder="Reservation Number"

@@ -95,7 +95,7 @@ const ItineraryScreen = () => {
         <Text>Reservation Number: {item.reservationNumber}</Text>
         {reservationWeather ? (
           <View>
-            <Text>Temperature: {reservationWeather.main.temp} °F</Text>
+            <Text>Temperature: {Math.round(reservationWeather.main.temp)} °F</Text>
             <Text>Conditions: {reservationWeather.weather[0].description}</Text>
           </View>
         ) : (
