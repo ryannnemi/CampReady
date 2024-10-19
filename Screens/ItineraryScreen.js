@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Button } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import moment from 'moment';
 import axios from 'axios';
 import firebase from '../firebaseConfig';
+import { useNavigation } from '@react-navigation/native';
 
 const OPENWEATHER_API_KEY = 'df20576553f4a0647462495ad9f24aa7';
 
@@ -12,6 +13,7 @@ const ItineraryScreen = () => {
   const [selectedDate, setSelectedDate] = useState(moment().format('YYYY-MM-DD'));
   const [dailyItinerary, setDailyItinerary] = useState([]);
   const [weatherData, setWeatherData] = useState({});
+  const navigation = useNavigation();
 
   // Fetch reservations from Firestore
   useEffect(() => {
@@ -69,7 +71,6 @@ const ItineraryScreen = () => {
           );
           return { reservationId: reservation.id, weather: response.data };
         } catch (error) {
-          console.error('Error fetching weather:', error);
           return { reservationId: reservation.id, weather: null };
         }
       });
@@ -102,6 +103,10 @@ const ItineraryScreen = () => {
           <Text>Loading weather...</Text>
         )}
         <Text>Notes: {item.notes}</Text>
+        <Button
+          title="View Activities"
+          onPress={() => navigation.navigate('Activity', { locationName: item.location.name })}
+        />
       </View>
     );
   };

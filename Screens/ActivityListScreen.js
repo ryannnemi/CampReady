@@ -1,14 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, TextInput, Button, StyleSheet } from 'react-native';
-import axios from 'axios';   
+import axios from 'axios'; 
+import { useRoute } from '@react-navigation/native'; 
 
 
 function ActivityListScreen() {
+  const route = useRoute();
+  const { locationName } = route.params || {};
   const [activities, setActivities] = useState([]);
   const [error, setError] = useState(null);
   const [facilityName, setFacilityName] = useState('');
-  const [searchQuery, setSearchQuery] = useState(''); 
+  const [searchQuery, setSearchQuery] = useState(locationName || ''); 
   const apiKey = '8ac50029-c1e9-457c-93c5-eeca42881e7b';
+
+  useEffect(() => {
+    if (locationName) {
+      handleSearch();
+    }
+  }, [locationName]);
 
   const handleSearch = async () => {
     setError(null);
@@ -25,24 +34,17 @@ function ActivityListScreen() {
         }
       );
   
-      console.log('Full Rec Area Search Response:', response.data);
-  
       if (response.data.RECDATA && response.data.RECDATA.length > 0) {
-        console.log('Unfiltered Rec Areas:', response.data.RECDATA);
   
         // Filter for exact match (case-insensitive)
         const filteredRecAreas = response.data.RECDATA.filter(recArea =>
           recArea.RecAreaName && recArea.RecAreaName.toLowerCase().startsWith(searchQuery.toLowerCase())
         );
   
-        console.log('Filtered Rec Areas:', filteredRecAreas);
-  
         if (filteredRecAreas.length > 0) {
           const firstRecArea = filteredRecAreas[0];
           const firstRecAreaId = firstRecArea.RecAreaID;
           setFacilityName(firstRecArea.RecAreaName || 'Rec Area'); // Update variable name if needed
-  
-          console.log('First Rec Area ID:', firstRecAreaId);
   
           // Fetch activities for the first rec area
           const activitiesResponse = await axios.get(
@@ -54,7 +56,6 @@ function ActivityListScreen() {
             }
           );
   
-          console.log('Activities Response:', activitiesResponse.data);
           setActivities(activitiesResponse.data.RECDATA || []);
         } else {
           setActivities([]);
