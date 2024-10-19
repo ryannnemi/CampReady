@@ -32,9 +32,9 @@ const ItineraryScreen = () => {
   // Filter reservations for the selected date
   useEffect(() => {
     const filtered = reservations.filter(reservation => {
-      const startDate = moment(reservation.startDate);
-      const endDate = moment(reservation.endDate);
-      return moment(selectedDate).isBetween(startDate, endDate, null, '[]');
+      const startDate = moment(reservation.startDate).format('YYYY-MM-DD');
+      const endDate = moment(reservation.endDate).format('YYYY-MM-DD');
+      return moment(selectedDate).isSameOrAfter(startDate) && moment(selectedDate).isSameOrBefore(endDate);
     });
     setDailyItinerary(filtered);
   }, [reservations, selectedDate]);
