@@ -13,8 +13,6 @@ const handleLogin = async () => {
      try {
        const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
        const user = userCredential.user;
- 
-       console.log('User logged in:', user);
 
        // Navigate to HomeScreen after successful login
        navigation.navigate('Home');

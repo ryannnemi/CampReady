@@ -2,12 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import moment from 'moment';
+import axios from 'axios';
 import firebase from '../firebaseConfig';
+
+const OPENWEATHER_API_KEY = 'df20576553f4a0647462495ad9f24aa7';
 
 const ItineraryScreen = () => {
   const [reservations, setReservations] = useState([]);
   const [selectedDate, setSelectedDate] = useState(moment().format('YYYY-MM-DD'));
   const [dailyItinerary, setDailyItinerary] = useState([]);
+  const [weatherData, setWeatherData] = useState({});
 
   // Fetch reservations from Firestore
   useEffect(() => {
@@ -35,30 +39,72 @@ const ItineraryScreen = () => {
     setDailyItinerary(filtered);
   }, [reservations, selectedDate]);
 
-    // Generate markedDates object for the calendar
-    const getMarkedDates = () => {
-        const markedDates = {};
-        reservations.forEach(reservation => {
-          const startDate = moment(reservation.startDate);
-          const endDate = moment(reservation.endDate);
-          let currentDate = startDate.clone();
-    
-          while (currentDate.isSameOrBefore(endDate)) {
-            markedDates[currentDate.format('YYYY-MM-DD')] = { marked: true, dotColor: 'red' };
-            currentDate.add(1, 'day');
+  // Generate markedDates object for the calendar
+  const getMarkedDates = () => {
+    const markedDates = {};
+    reservations.forEach(reservation => {
+      const startDate = moment(reservation.startDate);
+      const endDate = moment(reservation.endDate);
+      let currentDate = startDate.clone();
+
+      while (currentDate.isSameOrBefore(endDate)) {
+        markedDates[currentDate.format('YYYY-MM-DD')] = { marked: true, dotColor: 'red' };
+        currentDate.add(1, 'day');
+      }
+    });
+    return markedDates;
+  };
+
+  // Fetch weather data for each reservation
+  useEffect(() => {
+    const fetchWeather = async () => {
+      const weatherPromises = reservations.map(async (reservation) => {
+        try {
+          const { latitude, longitude } = reservation.location || {}; 
+          if (!latitude || !longitude) {
+            throw new Error('Latitude or Longitude is missing');
           }
-        });
-        return markedDates;
-      };
+          const response = await axios.get(
+            `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${OPENWEATHER_API_KEY}&units=imperial`
+          );
+          return { reservationId: reservation.id, weather: response.data };
+        } catch (error) {
+          console.error('Error fetching weather:', error);
+          return { reservationId: reservation.id, weather: null };
+        }
+      });
+
+      const weatherResults = await Promise.all(weatherPromises);
+      const newWeatherData = {};
+      weatherResults.forEach((result) => {
+        newWeatherData[result.reservationId] = result.weather;
+      });
+      setWeatherData(newWeatherData);
+    };
+
+    fetchWeather();
+  }, [reservations]);
 
   // Render each reservation item
-  const renderItem = ({ item }) => (
-    <View style={styles.item}>
-      <Text>Location: {item.locationName}</Text>
-      <Text>Reservation Number: {item.reservationNumber}</Text>
-      <Text>Notes: {item.notes}</Text>
-    </View>
-  );
+  const renderItem = ({ item }) => {
+    const reservationWeather = weatherData[item.id];
+
+    return (
+      <View style={styles.item}>
+        <Text>Location: {item.location.name}</Text>
+        <Text>Reservation Number: {item.reservationNumber}</Text>
+        {reservationWeather ? (
+          <View>
+            <Text>Temperature: {reservationWeather.main.temp} °F</Text>
+            <Text>Conditions: {reservationWeather.weather[0].description}</Text>
+          </View>
+        ) : (
+          <Text>Loading weather...</Text>
+        )}
+        <Text>Notes: {item.notes}</Text>
+      </View>
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -97,10 +143,6 @@ const styles = StyleSheet.create({
     padding: 20,
     marginVertical: 8,
     borderRadius: 8,
-  },
-  campsite: {
-    fontSize: 16,
-    fontWeight: 'bold',
   },
 });
 

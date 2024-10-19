@@ -3,6 +3,7 @@ import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from 'rea
 import firebase from '../firebaseConfig';
 import { collection, addDoc } from 'firebase/firestore';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { useNavigation } from '@react-navigation/native'; 
 
 const db = firebase.firestore();
 const auth = firebase.auth();
@@ -11,8 +12,9 @@ function AddReservationScreen() {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [reservationNumber, setReservationNumber] = useState('');
-  const [locationName, setLocationName] = useState('');
+  const [location, setLocation] = useState('');
   const [notes, setNotes] = useState('');
+  const navigation = useNavigation();
 
     // State for date/time pickers
     const [isStartDatePickerVisible, setStartDatePickerVisibility] = useState(false);
@@ -52,7 +54,12 @@ function AddReservationScreen() {
         startDate: startDate,
         endDate: endDate,
         reservationNumber: reservationNumber,
-        locationName: locationName,
+        location: {
+          name: location.name,
+          address: location.address,
+          latitude: location.latitude,
+          longitude: location.longitude
+        },
         notes: notes,
         userId: user.uid
       });
@@ -61,7 +68,7 @@ function AddReservationScreen() {
       setStartDate('');
       setEndDate('');
       setReservationNumber('');
-      setLocationName('');
+      setLocation('');
       setNotes('');
 
       console.log('Reservation added to Firestore!');
@@ -73,7 +80,6 @@ function AddReservationScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Add Reservation</Text>
-
       <TouchableOpacity onPress={showStartDatePicker}>
         <TextInput
           style={styles.input}
@@ -86,10 +92,8 @@ function AddReservationScreen() {
         isVisible={isStartDatePickerVisible}
         mode="datetime"
         onConfirm={handleStartDateConfirm}
-        onCancel={hideStartDatePicker}   
-
+        onCancel={hideStartDatePicker}
       />
-
       <TouchableOpacity onPress={showEndDatePicker}>
         <TextInput
           style={styles.input}
@@ -102,20 +106,20 @@ function AddReservationScreen() {
         isVisible={isEndDatePickerVisible}
         mode="datetime"
         onConfirm={handleEndDateConfirm}
-        onCancel={hideEndDatePicker}   
-
+        onCancel={hideEndDatePicker}
       />
+      <Button 
+        title="Select Location" 
+        onPress={() => navigation.navigate('Location')} 
+      />
+      {location && (
+        <Text>Selected Location: {location.name}</Text>
+      )}
       <TextInput
         style={styles.input}
         placeholder="Reservation Number"
         value={reservationNumber}
         onChangeText={setReservationNumber}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Location Name"
-        value={locationName}
-        onChangeText={setLocationName}
       />
       <TextInput
         style={styles.input}
@@ -145,6 +149,17 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 10,
     borderRadius: 5,
+  },
+  textInputContainer: {
+    backgroundColor: 'white',
+    padding: 10,
+    marginBottom: 10,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: '#ccc',
+  },
+  textInput: {
+    backgroundColor: 'white',
   },
 });
 

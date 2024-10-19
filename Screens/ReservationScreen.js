@@ -75,8 +75,7 @@ function ReservationScreen({navigation}) {
     <View style={styles.item}>
       <View style={styles.itemContent}>
         <Text style={styles.reservationNumber}>Reservation ID: {item.reservationNumber}</Text>
-        <Text style={styles.locationName}>Location: {item.locationName}</Text>
-        <Text style={styles.locationName}>Campsite: {item.campsiteNumber}</Text>
+        <Text style={styles.location}>Location: {item.location?.name || 'No location provided'}</Text>
         <Text style={styles.date}>Date: {format(item.startDate, 'MM/dd/yyyy HH:mm')}</Text>
       </View>
       <Icon 
@@ -134,7 +133,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
-  locationName: {
+  location: {
     fontSize: 16,
   },
   date: {
