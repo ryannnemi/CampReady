@@ -11,6 +11,7 @@
     "@firebase/app-compat": "^0.2.40",
     "@firebase/auth-compat": "^0.5.13",
     "@react-native-community/checkbox": "^0.5.17",
+    "@react-native-community/datetimepicker": "^8.2.0",
     "@react-native-community/masked-view": "^0.1.11",
     "@react-native-firebase/app": "^20.5.0",
     "@react-native-firebase/auth": "^20.5.0",

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from 'react-native';
+import { Platform, View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import firebase from '../firebaseConfig';
 import { collection, addDoc } from 'firebase/firestore';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
@@ -71,6 +71,13 @@ function AddReservationScreen() {
       setNotes('');
 
       console.log('Reservation added to Firestore!');
+
+      // Alert user reservation addition was successful
+      Alert.alert(
+        'Success',
+        'Reservation added successfully!',
+        [{ text: 'OK' }] 
+      );
     } catch (error) {
       console.error('Error adding reservation to Firestore: ', error);
     }
@@ -79,7 +86,7 @@ function AddReservationScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Add Reservation</Text>
-      <TouchableOpacity onPress={showStartDatePicker}>
+      <TouchableOpacity onPressIn={showStartDatePicker} style={{ width: '100%' }}>
         <TextInput
           style={styles.input}
           placeholder="Start Date and Time"
@@ -92,8 +99,9 @@ function AddReservationScreen() {
         mode="datetime"
         onConfirm={handleStartDateConfirm}
         onCancel={hideStartDatePicker}
+        display={Platform.OS === "ios" ? "spinner" : "default"}
       />
-      <TouchableOpacity onPress={showEndDatePicker}>
+      <TouchableOpacity onPressIn={showEndDatePicker} style={{ width: '100%' }}>
         <TextInput
           style={styles.input}
           placeholder="End Date and Time"
@@ -106,6 +114,7 @@ function AddReservationScreen() {
         mode="datetime"
         onConfirm={handleEndDateConfirm}
         onCancel={hideEndDatePicker}
+        display={Platform.OS === "ios" ? "spinner" : "default"}
       />
       <GooglePlacesAutocomplete
         placeholder='Search for a location'
