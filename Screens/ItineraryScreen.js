@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, Button } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Button, TouchableOpacity } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import moment from 'moment';
 import axios from 'axios';
 import firebase from '../firebaseConfig';
 import { useNavigation } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 
 const OPENWEATHER_API_KEY = 'df20576553f4a0647462495ad9f24aa7';
 
@@ -113,6 +114,11 @@ const ItineraryScreen = () => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.openDrawer()}>
+          <Ionicons name="menu" size={24} color="black" />
+        </TouchableOpacity>
+      </View>
       <Calendar
         onDayPress={day => setSelectedDate(day.dateString)}
         markedDates={{

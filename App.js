@@ -1,9 +1,15 @@
 // App.js
 import React from 'react';
-import AppNavigator from './AppNavigator'; // Import the navigator
+import { NavigationContainer } from '@react-navigation/native';
+import DrawerNavigator from './DrawerNavigator'; 
+import './gesture-handler';
 
 export default function App() {
-  return <AppNavigator />;
+  return(
+    <NavigationContainer>
+      <DrawerNavigator />
+    </NavigationContainer>
+);
 }
 
 

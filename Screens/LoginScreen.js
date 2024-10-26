@@ -15,7 +15,7 @@ const handleLogin = async () => {
        const user = userCredential.user;
 
        // Navigate to HomeScreen after successful login
-       navigation.navigate('Home');
+       navigation.navigate('Itinerary');
      } catch (error) {
        console.error(error);
      }
