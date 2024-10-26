@@ -106,7 +106,7 @@ const ItineraryScreen = () => {
         <Text>Notes: {item.notes}</Text>
         <Button
           title="View Activities"
-          onPress={() => navigation.navigate('Activity', { locationName: item.location.name })}
+          onPress={() => navigation.navigate('Activities', { locationName: item.location.name })}
         />
       </View>
     );
@@ -114,11 +114,6 @@ const ItineraryScreen = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.openDrawer()}>
-          <Ionicons name="menu" size={24} color="black" />
-        </TouchableOpacity>
-      </View>
       <Calendar
         onDayPress={day => setSelectedDate(day.dateString)}
         markedDates={{

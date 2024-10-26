@@ -83,7 +83,7 @@ export default function ViewListsScreen({ navigation }) {
       
       <Button
         title="Create New List"
-        onPress={() => navigation.navigate('CreateList')}
+        onPress={() => navigation.navigate('Create List')}
       />
 
       {loading ? (
@@ -120,6 +120,6 @@ const styles = StyleSheet.create({
   },
   listItemText: {
     fontSize: 18,
-    flex: 1, // Take up remaining space
+    flex: 1,
   },
 });

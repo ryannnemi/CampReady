@@ -4,9 +4,10 @@ import firebase from '../firebaseConfig';
 import { useNavigation } from '@react-navigation/native';
 
 
-export default function LoginScreen({navigation}) {
+export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const navigation = useNavigation();
 
  
 const handleLogin = async () => {
@@ -14,8 +15,6 @@ const handleLogin = async () => {
        const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
        const user = userCredential.user;
 
-       // Navigate to HomeScreen after successful login
-       navigation.navigate('Itinerary');
      } catch (error) {
        console.error(error);
      }
@@ -41,10 +40,24 @@ const handleLogin = async () => {
         autoCapitalize="none"
       />      
       <Button style={styles.button} title="Login" onPress={handleLogin}/> 
-      <TouchableOpacity style={styles.textButton} onPress={() => navigation.navigate('Signup', {email, password })}>
+      <TouchableOpacity style={styles.textButton} 
+        onPress={() => {
+          if (navigation) {
+            navigation.navigate('Signup', { email, password });
+          } else {
+            console.error("Navigation prop is undefined");
+          }
+        }}>
         <Text style={styles.textButton}>Sign Up</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.textButton} onPress={() => navigation.navigate('ForgotPassword', { email })}>
+      <TouchableOpacity style={styles.textButton} 
+        onPress={() => {
+          if (navigation) {
+            navigation.navigate('ForgotPassword', { email });
+          } else {
+            console.error("Navigation prop is undefined");
+          }
+        }}>
         <Text style={styles.textButton}>Forgot Password?</Text>
       </TouchableOpacity>
     </View>

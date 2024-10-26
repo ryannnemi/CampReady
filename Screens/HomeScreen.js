@@ -1,19 +1,11 @@
 // HomeScreen.js
 import React from 'react';
 import { View, Text, Button, StyleSheet, TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
 
 
 export default function HomeScreen({ navigation }) {
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.openDrawer()}>
-          <Ionicons name="menu" size={24} color="black" />
-        </TouchableOpacity>
-        <Text style={styles.headerText}>Home Screen</Text> 
-      </View>
       <View style={styles.buttonContainer}>
         <Button title="View List" onPress={() => navigation.navigate('ViewLists')} />
         <View style={styles.spacer} />
