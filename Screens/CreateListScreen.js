@@ -30,7 +30,7 @@ export default function CreateListScreen({ route, navigation }) {
     } catch (error) {
       console.error('Error adding document: ', error);
     }
-    navigation.navigate('ViewLists')
+    navigation.navigate('My Lists')
   };
 
   const handleItemChange = (text, index) => {

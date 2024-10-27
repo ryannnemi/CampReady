@@ -1,6 +1,6 @@
 // ViewListsScreen.js
-import React, { useState, useEffect } from 'react';
-import { View, Text, Button, StyleSheet, FlatList, TouchableOpacity, Alert } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, Button, StyleSheet, FlatList, TouchableOpacity, Alert, RefreshControl } from 'react-native';
 import firebase from '../firebaseConfig';
 import { getFirestore, collection, query, where, getDocs, doc, deleteDoc } from 'firebase/firestore';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -11,10 +11,11 @@ const auth = firebase.auth();
 export default function ViewListsScreen({ navigation }) {
   const [lists, setLists] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
   // Fetch lists created by the authenticated user
-  useEffect(() => {
-    const fetchLists = async () => {
+    const fetchLists = useCallback(async () => {
+      setLoading(true);
       try {
         const user = auth.currentUser;
   
@@ -35,11 +36,13 @@ export default function ViewListsScreen({ navigation }) {
         console.error('Error fetching lists: ', error);
       } finally {
         setLoading(false);
+        setRefreshing(false);
       }
-    };
+    }, []);
   
-    fetchLists();
-  }, []);
+    useEffect(() => {
+      fetchLists();
+    }, [fetchLists]);
 
     // Function to delete a list
     const handleDeleteList = async (listId) => {
@@ -93,6 +96,12 @@ export default function ViewListsScreen({ navigation }) {
           data={lists}
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={() => {
+              setRefreshing(true);
+              fetchLists();
+            }} />
+          }
         />
       ) : (
         <Text>No lists available</Text>

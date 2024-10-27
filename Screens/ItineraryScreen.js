@@ -20,6 +20,7 @@ const ItineraryScreen = () => {
   useEffect(() => {
     const unsubscribe = firebase.firestore()
       .collection('reservations')
+      .where('userId', '==', firebase.auth().currentUser.uid)
       .onSnapshot(querySnapshot => {
         const reservationData = [];
         querySnapshot.forEach(doc => {
