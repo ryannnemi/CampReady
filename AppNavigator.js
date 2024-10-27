@@ -3,6 +3,9 @@ import React from 'react';
 import firebase from './firebaseConfig';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
+import { Ionicons } from '@expo/vector-icons';
+
+// Screens
 import LoginScreen from './Screens/LoginScreen';
 import SignupScreen from './Screens/SignupScreen';
 import HomeScreen from './Screens/HomeScreen';
@@ -32,15 +35,79 @@ function AuthStackNavigator() {
 
 function MainDrawerNavigator() {
   return (
-    <Drawer.Navigator>
-      <Drawer.Screen name="View Lists" component={ViewListsScreen} />
-      <Drawer.Screen name="List Templates" component={TemplateScreen} />
-      <Drawer.Screen name="Activities" component={ActivityListScreen} />
-      <Drawer.Screen name="Reservation" component={ReservationScreen} />
-      <Drawer.Screen name="Itinerary" component={ItineraryScreen} />  
-      <Drawer.Screen name="Create List" component={CreateListScreen} />  
-      <Drawer.Screen name="List" component={ListScreen}/>  
-      <Drawer.Screen name="Add Reservation" component={AddReservationScreen} /> 
+    <Drawer.Navigator initialRouteName="Itinerary">
+      <Drawer.Screen 
+        name="My Lists" 
+        component={ViewListsScreen}
+        options={{
+          drawerIcon: () => (
+            <Ionicons name="list" color={"black"} size={20} />
+          ),
+        }} 
+      />
+      <Drawer.Screen 
+        name="Templates" 
+          component={TemplateScreen}
+          options={{
+            drawerIcon: () => (
+              <Ionicons name="layers" color={"black"} size={20} />
+            ),
+          }}
+        />
+      <Drawer.Screen 
+        name="Activities" 
+        component={ActivityListScreen} 
+        options={{
+          drawerIcon: () => (
+            <Ionicons name="bicycle" color={"black"} size={20} />
+          ),
+        }}
+      />
+      <Drawer.Screen 
+        name="Reservation" 
+          component={ReservationScreen} 
+          options={{
+            drawerIcon: () => (
+              <Ionicons name="bookmarks" color={"black"} size={20} />
+            ),
+          }}
+        />
+      <Drawer.Screen 
+        name="Itinerary" 
+          component={ItineraryScreen}
+          options={{
+            drawerIcon: () => (
+              <Ionicons name="calendar" color={"black"} size={20} />
+            ),
+          }}
+        />  
+      <Drawer.Screen 
+        name="Create List" 
+          component={CreateListScreen} 
+          options={{
+            drawerIcon: () => (
+              <Ionicons name="create" color={"black"} size={20} />
+            ),
+          }}
+        />  
+      <Drawer.Screen 
+        name="List" 
+          component={ListScreen}
+          options={{
+            drawerIcon: () => (
+              <Ionicons name="checkmark-done" color={"black"} size={20} />
+            ),
+          }}  
+        />  
+      <Drawer.Screen 
+        name="Add Reservation" 
+          component={AddReservationScreen}
+          options={{
+            drawerIcon: () => (
+              <Ionicons name="add" color={"black"} size={20} />
+            ),
+          }}  
+        /> 
     </Drawer.Navigator>
     );
 }
