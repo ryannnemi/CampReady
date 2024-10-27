@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, FlatList, Button, StyleSheet, Alert } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, TextInput, FlatList, Button, StyleSheet, Alert, RefreshControl } from 'react-native';
 import firebase from '../firebaseConfig';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { format } from 'date-fns'
@@ -11,6 +11,7 @@ function ReservationScreen({navigation}) {
   const [reservations, setReservations] = useState([]);
   const [error, setError] = useState(null);
   const [userEmail, setUserEmail] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     const user = auth.currentUser;
@@ -22,31 +23,34 @@ function ReservationScreen({navigation}) {
     }
   }, []);
 
-  useEffect(() => {
-    const fetchReservations = async () => {
-        try {
-          const userId = auth.currentUser.uid;
-          const querySnapshot = await db
-            .collection('reservations')
-            .where('userId', '==', userId)
-            .get();
-      
-          const userReservations = [];
-          querySnapshot.forEach((doc) => {
-            userReservations.push({ id: doc.id, ...doc.data() });
-          });
-      
-          setReservations(userReservations);
-        } catch (error) {
-          console.error('Error fetching reservations: ', error);
-        }
-      };
 
-    
+  const fetchReservations = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      const userId = auth.currentUser.uid;
+      const querySnapshot = await db
+        .collection('reservations')
+        .where('userId', '==', userId)
+        .get();
+
+      const userReservations = [];
+      querySnapshot.forEach((doc) => {
+        userReservations.push({ id: doc.id, ...doc.data() });
+      });
+
+      setReservations(userReservations);
+    } catch (error) {
+      console.error('Error fetching reservations: ', error);
+    } finally {
+      setRefreshing(false);
+    }
+  }, []);
+
+  useEffect(() => {
     if (userEmail) {
       fetchReservations();
     }
-  }, [userEmail]);
+  }, [userEmail, fetchReservations]);
 
   const deleteReservation = async (reservationId) => {
     try {
@@ -103,6 +107,9 @@ function ReservationScreen({navigation}) {
         data={reservations}
         renderItem={renderItem}
         keyExtractor={(item) => item.id.toString()} 
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={fetchReservations} />
+        }
       />
       <Button title="Add Reservation" onPress={() => navigation.navigate('Add Reservation')} />
     </View>

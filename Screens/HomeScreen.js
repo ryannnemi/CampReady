@@ -1,22 +1,21 @@
 // HomeScreen.js
 import React from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { View, Text, Button, StyleSheet, TouchableOpacity } from 'react-native';
 
 
-export default function HomeScreen({navigation}) {
+export default function HomeScreen({ navigation }) {
   return (
     <View style={styles.container}>
-        <Text style={styles.title}>HomeScreen</Text>
       <View style={styles.buttonContainer}>
-        <Button title="View List" onPress={() => navigation.navigate('ViewLists')}/>
+        <Button title="View List" onPress={() => navigation.navigate('ViewLists')} />
         <View style={styles.spacer} />
-        <Button title="Templates" onPress={() => navigation.navigate('Template')}/>
+        <Button title="Templates" onPress={() => navigation.navigate('Templates')} />
         <View style={styles.spacer} />
-        <Button title="Activities" onPress={() => navigation.navigate('Activity')}/>
+        <Button title="Activities" onPress={() => navigation.navigate('Activities')} />
         <View style={styles.spacer} />
-        <Button title="Reservations" onPress={() => navigation.navigate('Reservation')}/>
+        <Button title="Reservations" onPress={() => navigation.navigate('Reservations')} />
         <View style={styles.spacer} />
-        <Button title="Itinerary" onPress={() => navigation.navigate('Itinerary')}/>
+        <Button title="Itinerary" onPress={() => navigation.navigate('Itinerary')} />
       </View>
     </View>
   );
@@ -39,5 +38,15 @@ const styles = StyleSheet.create({
   },
   spacer: {
     marginVertical: 10,
-  }
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 10,
+    backgroundColor: '#f0f0f0', 
+  },
+  headerText: {
+    marginLeft: 10,
+    fontSize: 18,
+  },
 });
