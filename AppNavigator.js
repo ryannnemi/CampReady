@@ -9,7 +9,6 @@ import { Ionicons } from '@expo/vector-icons';
 // Screens
 import LoginScreen from './Screens/LoginScreen';
 import SignupScreen from './Screens/SignupScreen';
-import HomeScreen from './Screens/HomeScreen';
 import ForgotPasswordScreen from './Screens/ForgotPasswordScreen';
 import AddReservationScreen from './Screens/AddReservationScreen';
 import ItineraryScreen from './Screens/ItineraryScreen';
@@ -62,63 +61,65 @@ function CustomDrawerContent(props) {
 
 function MainDrawerNavigator() {
   return (
-    <Drawer.Navigator initialRouteName="Itinerary" drawerContent={(props) => <CustomDrawerContent {...props} />}>
-      <Drawer.Screen 
-        name="Itinerary" 
-        component={ItineraryScreen}
-        options={{
-          drawerIcon: () => <Ionicons name="calendar" color="black" size={24} />,
-        }}
-      /> 
-      <Drawer.Screen 
-        name="Reservation" 
-        component={ReservationScreen} 
-        options={{
-          drawerIcon: () => <Ionicons name="bookmarks" color="black" size={24} />,
-        }}
-      />
-      <Drawer.Screen 
-        name="Add Reservation" 
-        component={AddReservationScreen}
-        options={{
-          drawerIcon: () => <Ionicons name="add" color="black" size={24} />,
-        }}  
-      />
-      <Drawer.Screen 
-        name="My Lists" 
-        component={ViewListsScreen}
-        options={{
-          drawerIcon: () => <Ionicons name="list" color="black" size={24} />,
-        }} 
-      />
-      <Drawer.Screen 
-        name="Create List" 
-        component={CreateListScreen} 
-        options={{
-          drawerIcon: () => <Ionicons name="create" color="black" size={24} />,
-        }}
-      />  
-      <Drawer.Screen 
-        name="Templates" 
-        component={TemplateScreen}
-        options={{
-          drawerIcon: () => <Ionicons name="layers" color="black" size={24} />,
-        }}
-      />
-      <Drawer.Screen 
-        name="List" 
-        component={ListScreen}
-        options={{
-          drawerIcon: () => <Ionicons name="checkmark-done" color="black" size={24} />,
-        }}  
-      /> 
-      <Drawer.Screen 
-        name="Activities" 
-        component={ActivityListScreen} 
-        options={{
-          drawerIcon: () => <Ionicons name="bicycle" color="black" size={24} />,
-        }}
-      />     
+    <Drawer.Navigator 
+      initialRouteName="Itinerary" 
+      drawerContent={(props) => <CustomDrawerContent {...props} />} >
+        <Drawer.Screen 
+          name="Itinerary" 
+          component={ItineraryScreen}
+          options={{
+            drawerIcon: () => <Ionicons name="calendar" color="black" size={24} />,
+          }}
+        /> 
+        <Drawer.Screen 
+          name="My Reservations" 
+          component={ReservationScreen} 
+          options={{
+            drawerIcon: () => <Ionicons name="bookmarks" color="black" size={24} />,
+          }}
+        />
+        <Drawer.Screen 
+          name="Add Reservation" 
+          component={AddReservationScreen}
+          options={{
+            drawerIcon: () => <Ionicons name="add" color="black" size={24} />,
+          }}  
+        />
+        <Drawer.Screen 
+          name="My Lists" 
+          component={ViewListsScreen}
+          options={{
+            drawerIcon: () => <Ionicons name="list" color="black" size={24} />,
+          }} 
+        />
+        <Drawer.Screen 
+          name="Create List" 
+          component={CreateListScreen} 
+          options={{
+            drawerIcon: () => <Ionicons name="create" color="black" size={24} />,
+          }}
+        />  
+        <Drawer.Screen 
+          name="Templates" 
+          component={TemplateScreen}
+          options={{
+            drawerIcon: () => <Ionicons name="layers" color="black" size={24} />,
+          }}
+        />
+        <Drawer.Screen 
+          name="List" 
+          component={ListScreen}
+          options={{
+            drawerItemStyle: { display: 'none' }
+          }}  
+        /> 
+        <Drawer.Screen 
+          name="Activities" 
+          component={ActivityListScreen} 
+          options={{
+            drawerIcon: () => <Ionicons name="bicycle" color="black" size={24} />,
+          }}
+        />     
     </Drawer.Navigator>
   );
 }
