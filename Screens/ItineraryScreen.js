@@ -5,9 +5,10 @@ import moment from 'moment';
 import axios from 'axios';
 import firebase from '../firebaseConfig';
 import { useNavigation } from '@react-navigation/native';
-import { Ionicons } from '@expo/vector-icons';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const OPENWEATHER_API_KEY = 'df20576553f4a0647462495ad9f24aa7';
+const GEMINI_API_KEY = 'AIzaSyDvk9-KEX8WbW7kyOfs0Wpgh_OGMU-pJ5M';
 
 const ItineraryScreen = () => {
   const [reservations, setReservations] = useState([]);
@@ -87,6 +88,45 @@ const ItineraryScreen = () => {
 
     fetchWeather();
   }, [reservations]);
+
+  const getRecommendedItems = async (reservation) => {
+    const reservationWeather = weatherData[reservation.id];
+    const { startDate, endDate, location } = reservation;
+   
+    if (reservationWeather && reservationWeather.weather) {
+      try {
+        const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const temp = reservationWeather.main.temp;
+        const conditions = reservationWeather.weather[0].description
+        
+        console.log(temp)
+        console.log(conditions)
+
+        const prompt = `What are some essential camping items for ${temp} degree farenheit ${conditions} weather in ${location.name} during ${startDate} to ${endDate}?`;
+
+        const result = await model.generateContent(prompt);
+        console.log(result.response.text()); // Log the generated text
+      } catch (error) {
+        console.error('Error fetching recommended items:', error);
+      }
+    } else {
+      console.log('Weather data not yet available for this reservation.');
+    }
+  };
+  
+  useEffect(() => {
+    const fetchRecommendations = async () => { // Define an async function
+      await Promise.all(dailyItinerary.map(async (item) => { // Use Promise.all
+        const reservationWeather = weatherData[item.id];
+        if (reservationWeather) {
+          await getRecommendedItems(item); // Await the getRecommendedItems call
+        }
+      }));
+    };
+
+    fetchRecommendations(); // Call the async function
+  }, [weatherData, dailyItinerary]);
 
   // Render each reservation item
   const renderItem = ({ item }) => {

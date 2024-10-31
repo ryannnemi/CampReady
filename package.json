@@ -10,6 +10,7 @@
   "dependencies": {
     "@firebase/app-compat": "^0.2.40",
     "@firebase/auth-compat": "^0.5.13",
+    "@google/generative-ai": "^0.21.0",
     "@react-native-community/checkbox": "^0.5.17",
     "@react-native-community/datetimepicker": "^8.2.0",
     "@react-native-community/masked-view": "^0.1.11",
@@ -44,7 +45,8 @@
     "react-native-vector-icons": "^10.2.0",
     "react-test-renderer": "^18.2.0",
     "typescript": "~5.3.3",
-    "uuid": "^10.0.0"
+    "uuid": "^10.0.0",
+    "expo-constants": "~16.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

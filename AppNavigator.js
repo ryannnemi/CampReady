@@ -27,8 +27,7 @@ function AuthStackNavigator() {
     <AuthStack.Navigator initialRouteName="Login">
       <AuthStack.Screen name="Login" component={LoginScreen} />
       <AuthStack.Screen name="Signup" component={SignupScreen} />
-      <AuthStack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
-      <AuthStack.Screen name="Home" component={HomeScreen} />            
+      <AuthStack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />          
     </AuthStack.Navigator>
   );
 }
