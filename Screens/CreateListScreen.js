@@ -10,8 +10,13 @@ const db = firebase.firestore();
 const auth = firebase.auth();
 
 export default function CreateListScreen({ route, navigation }) {
-  const [listName, setListName] = useState('');
-  const [items, setItems] = useState([{ text: '', checked: false, editing: true }]);
+  const { listName: initialListName, initialItems } = route.params || {};
+  const [listName, setListName] = useState(initialListName || '');
+  const [items, setItems] = useState(
+    initialItems 
+      ? initialItems.map(item => ({ text: item, checked: false, editing: false }))
+      : [{ text: '', checked: false, editing: true }]
+  );
 
   const handleCreateList = async () => {
     try {

@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, Button, StyleSheet, FlatList, TouchableOpacity, Alert, RefreshControl } from 'react-native';
 import firebase from '../firebaseConfig';
-import { getFirestore, collection, query, where, getDocs, doc, deleteDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, deleteDoc } from 'firebase/firestore';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 const db = firebase.firestore();
