@@ -110,11 +110,27 @@ const ItineraryScreen = () => {
         }
   
         // Condition-based recommendations
-        if (conditions.includes("rain")) {
+        if (conditions.includes("rain") || conditions.includes("drizzle")) {
           items.push("Raincoat", "Umbrella", "Waterproof shoes");
-        } else if (conditions.includes("snow")) {
-          items.push("Heavy coat", "Waterproof boots", "Warm hat", "Gloves");
+        } 
+        if (conditions.includes("thunderstorm")) {
+          items.push("Raincoat", "Umbrella", "Waterproof shoes", "Stay indoors if possible"); 
         }
+        if (conditions.includes("snow")) {
+          items.push("Heavy coat", "Waterproof boots", "Warm hat", "Gloves", "Scarf");
+        } 
+        if (conditions.includes("clear sky") && temp > 70) {
+          items.push("Sunscreen", "Sunglasses", "Hat");
+        } 
+        if (conditions.includes("clouds")) {
+          items.push("Light jacket");
+        } 
+        if (conditions.includes("fog")) {
+          items.push("Be cautious while driving"); 
+        } 
+        if (conditions.includes("windy")) {
+          items.push("Windbreaker or jacket", "Secure loose items"); 
+        }        
   
         // Fetch activities for the location
         const activitiesResponse = await axios.get(
@@ -149,14 +165,26 @@ const ItineraryScreen = () => {
   
             // Activity-based recommendations
             if (normalizedActivityNames.includes("hiking")) {
-              items.push("Hiking boots", "Backpack", "Water bottle");
+              items.push("Hiking boots", "Backpack", "Water bottle", "Hiking Poles");
             }
             if (normalizedActivityNames.includes("swimming")) {
               items.push("Swimsuit", "Towel", "Goggles");
             }
             if (normalizedActivityNames.includes("camping")) {
               items.push("Tent", "Sleeping bag", "Camp stove");
-            }            
+            }  
+            if (activityNames.includes("Fishing")) {
+              items.push("Fishing rod", "Tackle box", "Bait", "Fishing license");
+            }
+            if (activityNames.includes("Boating")) {
+              items.push("Life jacket", "Sunscreen", "Hat", "Sunglasses", "Waterproof bag");
+            }
+            if (activityNames.includes("Horseback riding")) {
+              items.push("Long pants", "Closed-toe shoes", "Helmet", "Gloves");
+            }
+            if (activityNames.includes("Paddling")) {
+              items.push("Life jacket", "Water shoes", "Dry bag", "Sunscreen");
+            }          
   
             // Navigate to CreateListScreen with the recommended items
             navigation.navigate('Create List', {
@@ -201,18 +229,23 @@ const ItineraryScreen = () => {
     const reservationWeather = weatherData[item.id];
 
     return (
-      <View style={styles.item}>
-        <Text>Location: {item.location.name}</Text>
-        <Text>Reservation Number: {item.reservationNumber}</Text>
-        {reservationWeather ? (
-          <View>
-            <Text>Temperature: {Math.round(reservationWeather.main.temp)} °F</Text>
-            <Text>Conditions: {reservationWeather.weather[0].description}</Text>
-          </View>
-        ) : (
-          <Text>Loading weather...</Text>
-        )}
-        <Text>Notes: {item.notes}</Text>
+      <View style={styles.itemContainer}>
+        <View style={styles.leftContainer}>
+          <Text>Location: {item.location.name}</Text>
+
+          <Text>Reservation Number: {item.reservationNumber}</Text>
+
+          {reservationWeather ? (
+            <View>
+              <Text>Temperature: {Math.round(reservationWeather.main.temp)} °F</Text>
+              <Text>Conditions: {reservationWeather.weather[0].description}</Text>
+            </View>
+          ) : (
+            <Text>Loading weather...</Text>
+          )}
+          
+          <Text>Notes: {item.notes}</Text>
+        </View>
         <View style={styles.iconButtonContainer}>
 
           <TouchableOpacity
@@ -263,13 +296,19 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginVertical: 10,
   },
-  item: {
-    backgroundColor: '#f9f9f9',
-    padding: 20,
-    marginVertical: 8,
-    borderRadius: 8,
+  itemContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 10,
+    borderTopWidth: 1,
+    borderTopColor: '#ddd',
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+  },
+  leftContainer: {
     flexDirection: 'column',
-    justifyContent: 'space-between'
+    alignItems: 'left',
+    flex: 1,
   },
   iconButton: {
     marginLeft: 20,
