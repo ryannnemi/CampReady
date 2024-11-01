@@ -5,10 +5,11 @@ import moment from 'moment';
 import axios from 'axios';
 import firebase from '../firebaseConfig';
 import { useNavigation } from '@react-navigation/native';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { Ionicons } from '@expo/vector-icons';
+//import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const OPENWEATHER_API_KEY = 'df20576553f4a0647462495ad9f24aa7';
-const GEMINI_API_KEY = 'AIzaSyDvk9-KEX8WbW7kyOfs0Wpgh_OGMU-pJ5M';
+//const GEMINI_API_KEY = 'AIzaSyDvk9-KEX8WbW7kyOfs0Wpgh_OGMU-pJ5M';
 
 const ItineraryScreen = () => {
   const [reservations, setReservations] = useState([]);
@@ -91,46 +92,90 @@ const ItineraryScreen = () => {
 
   const getRecommendedItems = async (reservation) => {
     const reservationWeather = weatherData[reservation.id];
-    const { startDate, endDate, location } = reservation;
-   
+  
     if (reservationWeather && reservationWeather.weather) {
       try {
+        // Extract temperature and weather conditions
         const temp = Math.round(reservationWeather.main.temp);
         const conditions = reservationWeather.weather[0].description.toLowerCase();
-        const items = [];
-        
-        console.log(temp)
-        console.log(conditions)
-
-          // Temperature-based recommendations
-          if (temp > 75) {
-            items.push("Shorts", "T-shirts", "Sunglasses", "Sunscreen", "Hat");
-          } else if (temp > 50) {
-            items.push("Light jacket", "Long pants", "Comfortable shoes");
+        let items = [];
+  
+        // Temperature-based recommendations
+        if (temp > 75) {
+          items.push("Shorts", "T-shirts", "Sunglasses", "Sunscreen", "Hat");
+        } else if (temp > 50) {
+          items.push("Light jacket", "Long pants", "Comfortable shoes");
+        } else {
+          items.push("Warm coat", "Gloves", "Hat", "Scarf", "Warm socks");
+        }
+  
+        // Condition-based recommendations
+        if (conditions.includes("rain")) {
+          items.push("Raincoat", "Umbrella", "Waterproof shoes");
+        } else if (conditions.includes("snow")) {
+          items.push("Heavy coat", "Waterproof boots", "Warm hat", "Gloves");
+        }
+  
+        // Fetch activities for the location
+        const activitiesResponse = await axios.get(
+          'https://ridb.recreation.gov/api/v1/recareas',
+          {
+            headers: { apiKey: '8ac50029-c1e9-457c-93c5-eeca42881e7b' },
+            params: { query: reservation.location.name },
+          }
+        );
+  
+        if (activitiesResponse.data.RECDATA && activitiesResponse.data.RECDATA.length > 0) {
+          // Filter for an exact match (case-insensitive)
+          const filteredRecAreas = activitiesResponse.data.RECDATA.filter(recArea =>
+            recArea.RecAreaName && recArea.RecAreaName.toLowerCase().startsWith(reservation.location.name.toLowerCase())
+          );
+  
+          if (filteredRecAreas.length > 0) {
+            const firstRecArea = filteredRecAreas[0];
+            const firstRecAreaId = firstRecArea.RecAreaID;
+  
+            // Fetch activities for the first recreation area
+            const detailedActivitiesResponse = await axios.get(
+              `https://ridb.recreation.gov/api/v1/recareas/${firstRecAreaId}/activities`,
+              {
+                headers: { apiKey: '8ac50029-c1e9-457c-93c5-eeca42881e7b' },
+              }
+            );
+  
+            // Extract activity names
+            const activityNames = detailedActivitiesResponse.data.RECDATA.map(activity => activity.ActivityName);
+            const normalizedActivityNames = activityNames.map(activity => activity.trim().toLowerCase());
+  
+            // Activity-based recommendations
+            if (normalizedActivityNames.includes("hiking")) {
+              items.push("Hiking boots", "Backpack", "Water bottle");
+            }
+            if (normalizedActivityNames.includes("swimming")) {
+              items.push("Swimsuit", "Towel", "Goggles");
+            }
+            if (normalizedActivityNames.includes("camping")) {
+              items.push("Tent", "Sleeping bag", "Camp stove");
+            }            
+  
+            // Navigate to CreateListScreen with the recommended items
+            navigation.navigate('Create List', {
+              listName: `Packing List for ${reservation.location.name}`,
+              initialItems: items,
+            });
           } else {
-            items.push("Warm coat", "Gloves", "Hat", "Scarf", "Warm socks");
+            console.warn('No recreation areas found with that name.');
           }
-
-          // Condition-based recommendations
-          if (conditions.includes("rain")) {
-            items.push("Raincoat", "Umbrella", "Waterproof shoes");
-          } else if (conditions.includes("snow")) {
-            items.push("Heavy coat", "Waterproof boots", "Warm hat", "Gloves");
-          }
-
-          // Navigate to CreateListScreen with the recommended items
-          navigation.navigate('Create List', { 
-            listName: `Packing List for ${reservation.location.name}`, 
-            initialItems: items 
-          });
-
+        } else {
+          console.warn('No recreation areas found for the location name.');
+        }
       } catch (error) {
         console.error('Error fetching recommended items:', error);
       }
     } else {
       console.log('Weather data not yet available for this reservation.');
     }
-  };
+  };  
   
   useEffect(() => {
     const fetchRecommendations = async () => { 
@@ -151,14 +196,6 @@ const ItineraryScreen = () => {
     fetchRecommendations(); 
   }, [weatherData, dailyItinerary]);
 
-  function extractItems(text) {
-    const items = text.split('\n')
-      .filter(line => line.trim().startsWith('* '))
-      .map(line => line.trim().substring(2).split(':')[0].trim());
-  
-    return items;
-  }
-
   // Render each reservation item
   const renderItem = ({ item }) => {
     const reservationWeather = weatherData[item.id];
@@ -176,15 +213,19 @@ const ItineraryScreen = () => {
           <Text>Loading weather...</Text>
         )}
         <Text>Notes: {item.notes}</Text>
-        <View style={styles.buttonContainer}>
-          <Button
-            title="Activities"
-            onPress={() => navigation.navigate('Activities', { locationName: item.location.name })}
-          />
-          <Button
-            title="Generate Packing List"
-            onPress={() => getRecommendedItems(item)} 
-          />
+        <View style={styles.iconButtonContainer}>
+
+          <TouchableOpacity
+            style={styles.iconButton}  
+            onPress={() => getRecommendedItems(item)}>
+            <Ionicons name="create" color="black" size={40} />            
+          </TouchableOpacity>
+
+          <TouchableOpacity             
+            style={styles.iconButton}  
+            onPress={() => navigation.navigate('Activities', { locationName: item.location.name })}>
+            <Ionicons name="bicycle" color="black" size={40} />
+          </TouchableOpacity>          
         </View>  
       </View>
     );
@@ -227,11 +268,17 @@ const styles = StyleSheet.create({
     padding: 20,
     marginVertical: 8,
     borderRadius: 8,
+    flexDirection: 'column',
+    justifyContent: 'space-between'
   },
-  buttonContainer: {
-    flexDirection: 'row', 
-    justifyContent: 'space-around', 
-    marginTop: 10, 
+  iconButton: {
+    marginLeft: 20,
+  },
+  iconButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    marginTop: 10,
   },
 });
 

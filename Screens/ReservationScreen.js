@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, TextInput, FlatList, Button, StyleSheet, Alert, RefreshControl } from 'react-native';
+import { View, Text, FlatList, Button, StyleSheet, Alert, RefreshControl } from 'react-native';
 import firebase from '../firebaseConfig';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { format } from 'date-fns'

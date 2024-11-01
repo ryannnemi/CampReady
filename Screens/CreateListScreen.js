@@ -13,8 +13,12 @@ export default function CreateListScreen({ route, navigation }) {
   const { listName: initialListName, initialItems } = route.params || {};
   const [listName, setListName] = useState(initialListName || '');
   const [items, setItems] = useState(
-    initialItems 
-      ? initialItems.map(item => ({ text: item, checked: false, editing: false }))
+    initialItems && initialItems.length > 0
+      ? [
+          ...initialItems.map(item => ({ text: item, checked: false, editing: false })),
+           // Always add a blank editable item
+          { text: '', checked: false, editing: true },
+        ]
       : [{ text: '', checked: false, editing: true }]
   );
 
@@ -44,7 +48,7 @@ export default function CreateListScreen({ route, navigation }) {
 
     // If the text input is not empty and is the last item, add a new empty item
     if (text.trim() !== '' && index === items.length - 1) {
-      updatedItems.push({ text: '', checked: false });
+      updatedItems.push({ text: '', checked: false, editing: true });
     }
 
     setItems(updatedItems);
