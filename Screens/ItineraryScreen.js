@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, Button, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Button, TouchableOpacity, Linking, Platform } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import moment from 'moment';
 import axios from 'axios';
@@ -228,6 +228,16 @@ const ItineraryScreen = () => {
   const renderItem = ({ item }) => {
     const reservationWeather = weatherData[item.id];
 
+    const openNavigationApp = () => {
+      const { latitude, longitude } = item.location; 
+      const url = Platform.select({
+        ios: `maps:0,0?q=${latitude},${longitude}`,
+        android: `geo:0,0?q=${latitude},${longitude}`,
+      });
+  
+      Linking.openURL(url);
+    };
+
     return (
       <View style={styles.itemContainer}>
         <View style={styles.leftContainer}>
@@ -247,6 +257,12 @@ const ItineraryScreen = () => {
           <Text>Notes: {item.notes}</Text>
         </View>
         <View style={styles.iconButtonContainer}>
+
+          <TouchableOpacity 
+            style={styles.iconButton} 
+            onPress={openNavigationApp}>
+            <Ionicons name="navigate" color="black" size={40} />
+          </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.iconButton}  
