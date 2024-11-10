@@ -55,6 +55,8 @@ function ActivityListScreen() {
               },
             }
           );
+
+          console.log(firstRecAreaId);
   
           setActivities(activitiesResponse.data.RECDATA || []);
         } else {
