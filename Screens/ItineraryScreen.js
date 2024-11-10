@@ -8,6 +8,7 @@ import firebase from '../firebaseConfig';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { getRecommendedItems } from '../Functions/getRecommendedItems';
+import { openNavigationApp } from '../Functions/openNavigationApp';
 
 const OPENWEATHER_API_KEY = 'df20576553f4a0647462495ad9f24aa7';
 
@@ -111,23 +112,7 @@ const ItineraryScreen = () => {
 
   // Render each reservation item
   const renderItem = ({ item }) => {
-    const reservationWeather = weatherData[item.id];
-
-    const openNavigationApp = () => {
-      const { latitude, longitude } = item.location; 
-
-      if (!latitude || !longitude) {
-        Alert.alert("Location information is missing")
-        return;
-      }
-
-      const url = Platform.select({
-        ios: `maps:0,0?q=${latitude},${longitude}`,
-        android: `geo:0,0?q=${latitude},${longitude}`,
-      });
-  
-      Linking.openURL(url);
-    };
+    const reservationWeather = weatherData[item.id];    
 
     return (
       <View style={styles.itemContainer}>
@@ -151,7 +136,7 @@ const ItineraryScreen = () => {
 
           <TouchableOpacity 
             style={styles.iconButton} 
-            onPress={openNavigationApp}>
+            onPress={() => openNavigationApp(item)}>
             <Ionicons name="navigate" color="black" size={40} />
           </TouchableOpacity>
 
