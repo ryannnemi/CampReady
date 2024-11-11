@@ -2,8 +2,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, Button, StyleSheet, FlatList, TouchableOpacity, Alert, RefreshControl } from 'react-native';
 import firebase from '../firebaseConfig';
-import { collection, query, where, getDocs, doc, deleteDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, getDoc, doc, deleteDoc } from 'firebase/firestore';
 import Icon from 'react-native-vector-icons/FontAwesome';
+//import Share from 'react-native-share';
+import * as Sharing from 'expo-sharing';
+import { Share } from 'react-native';
 
 const db = firebase.firestore();
 const auth = firebase.auth();
@@ -66,6 +69,47 @@ export default function ViewListsScreen({ navigation }) {
       );
     };
 
+    // Fetch list details for social media sharing
+    const fetchListItems = async (listId) => {
+      try {
+        const listRef = doc(db, 'checklists', listId);
+        const listSnapshot = await getDoc(listRef);
+    
+        if (listSnapshot.exists()) {
+          const listData = listSnapshot.data();
+          const listItems = listData.items.map(item => item.text); // Adjust to extract text or other fields as needed
+          console.log("Fetched items:", listItems);
+          return listItems;
+        } else {
+          console.log("No such document!");
+          return [];
+        }
+      } catch (error) {
+        console.error('Error fetching list items:', error);
+        return [];
+      }
+    };
+    
+
+    // Function to share list
+    const handleShareList = async (item) => {
+      try {
+        const items = await fetchListItems(item.id);
+        const message = `Check out my CampReady checklist: "${item.title}"\n\n${items.join('\n')}`;
+        
+        // Use Expo's Share API to share text content
+        await Share.share({
+          message: message,
+          title: `Checklist: ${item.title}`,
+        });
+      } catch (error) {
+        console.error('Error sharing list:', error);
+        if (error.message === 'ENETUNREACH') {
+          Alert.alert('Network Error', 'Please check your internet connection.');
+        }
+      }
+    };
+
     const renderItem = ({ item }) => (
       <View style={styles.listItem}>
         <TouchableOpacity
@@ -74,8 +118,13 @@ export default function ViewListsScreen({ navigation }) {
         >
           <Text style={styles.listItemText}>{item.title}</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => confirmDelete(item.id)} style={styles.deleteButton}> 
+
+        <TouchableOpacity onPress={() => confirmDelete(item.id)} style={styles.button}> 
           <Icon name="trash" size={20} color="gray" />
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => handleShareList(item)} style={styles.button}>
+          <Icon name="share" size={20} color="gray" /> 
         </TouchableOpacity>
       </View>
     );
@@ -130,5 +179,9 @@ const styles = StyleSheet.create({
   listItemText: {
     fontSize: 18,
     flex: 1,
+  },
+  button: {
+    paddingHorizaontal: 20,
+    marginLeft: 15,
   },
 });
