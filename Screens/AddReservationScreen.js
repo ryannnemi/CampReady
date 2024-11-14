@@ -4,6 +4,7 @@ import firebase from '../firebaseConfig';
 import { collection, addDoc } from 'firebase/firestore';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+import * as Notifications from 'expo-notifications';
 
 const db = firebase.firestore();
 const auth = firebase.auth();
@@ -69,6 +70,17 @@ function AddReservationScreen() {
       setReservationNumber('');
       setLocation('');
       setNotes('');
+
+      const trigger = new Date(item.startDate);
+      trigger.setHours(trigger.getHours() - 1);
+
+      Notifications.scheduleNotificationAsync({
+        content: {
+          title: 'Upcoming Reservation Reminder',
+          body: `You have a reservation at ${item.location.name} on ${format(item.startDate, 'MM/dd/yyyy HH:mm')}`,
+        },
+        trigger,
+      });
 
       console.log('Reservation added to Firestore!');
 
