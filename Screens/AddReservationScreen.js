@@ -1,5 +1,7 @@
+// registerForPushNotifications.js
 import React, { useState, useEffect } from 'react';
 import { Platform, View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 import firebase from '../firebaseConfig';
 import { collection, addDoc } from 'firebase/firestore';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
@@ -15,6 +17,7 @@ function AddReservationScreen() {
   const [reservationNumber, setReservationNumber] = useState('');
   const [location, setLocation] = useState('');
   const [notes, setNotes] = useState('');
+  const [notificationOffset, setNotificationOffset] = useState(60);
 
     // State for date/time pickers
     const [isStartDatePickerVisible, setStartDatePickerVisibility] = useState(false);
@@ -50,7 +53,8 @@ function AddReservationScreen() {
     try {
       const user = auth.currentUser; 
 
-      await addDoc(collection(db, 'reservations'), {
+      // Add reservation to Firestore
+      const reservationRef = await addDoc(collection(db, 'reservations'), {
         startDate: startDate,
         endDate: endDate,
         reservationNumber: reservationNumber,
@@ -71,16 +75,25 @@ function AddReservationScreen() {
       setLocation('');
       setNotes('');
 
-      const trigger = new Date(item.startDate);
-      trigger.setHours(trigger.getHours() - 1);
+      // Check if notification should be scheduled
+      if (notificationOffset !== null) {
+        // Calculate trigger time
+        const triggerDate = new Date(startDate);
+        triggerDate.setMinutes(triggerDate.getMinutes() - notificationOffset); // Subtract offset
 
-      Notifications.scheduleNotificationAsync({
-        content: {
-          title: 'Upcoming Reservation Reminder',
-          body: `You have a reservation at ${item.location.name} on ${format(item.startDate, 'MM/dd/yyyy HH:mm')}`,
-        },
-        trigger,
-      });
+        // Schedule a notification
+        await Notifications.scheduleNotificationAsync({
+          content: {
+            title: 'Upcoming Reservation Reminder',
+            body: `You have a reservation at ${location.name} on ${new Date(startDate).toLocaleString()}`,
+          },
+          trigger: triggerDate,
+        });
+
+      console.log('Notification scheduled!');
+      } else {
+        console.log('No notification scheduled.');
+      }
 
       console.log('Reservation added to Firestore!');
 
@@ -98,14 +111,16 @@ function AddReservationScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Add Reservation</Text>
+
       <TouchableOpacity onPressIn={showStartDatePicker} style={{ width: '100%' }}>
         <TextInput
           style={styles.input}
           placeholder="Start Date and Time"
-          value={startDate}
+          value={startDate ? new Date(startDate).toLocaleString() : ''}
           editable={false}
         />
       </TouchableOpacity>
+
       <DateTimePickerModal
         isVisible={isStartDatePickerVisible}
         mode="datetime"
@@ -113,14 +128,16 @@ function AddReservationScreen() {
         onCancel={hideStartDatePicker}
         display={Platform.OS === "ios" ? "spinner" : "default"}
       />
+
       <TouchableOpacity onPressIn={showEndDatePicker} style={{ width: '100%' }}>
         <TextInput
           style={styles.input}
           placeholder="End Date and Time"
-          value={endDate}
+          value={endtDate ? new Date(endDate).toLocaleString() : ''}
           editable={false}
         />
       </TouchableOpacity>
+
       <DateTimePickerModal
         isVisible={isEndDatePickerVisible}
         mode="datetime"
@@ -128,6 +145,19 @@ function AddReservationScreen() {
         onCancel={hideEndDatePicker}
         display={Platform.OS === "ios" ? "spinner" : "default"}
       />
+
+      <Picker
+        selectedValue={notificationOffset}
+        onValueChange={(itemValue) => setNotificationOffset(itemValue)}
+        style={styles.picker}
+      >
+        <Picker.Item label="No Notification" value={null} />
+        <Picker.Item label="15 minutes before" value={15} />
+        <Picker.Item label="30 minutes before" value={30} />
+        <Picker.Item label="1 hour before" value={60} />
+        <Picker.Item label="1 day before" value={1440} /> 
+      </Picker>
+
       <GooglePlacesAutocomplete
         placeholder='Search for a location'
         onPress={(data, details = null) => {
@@ -193,6 +223,13 @@ const styles = StyleSheet.create({
   },
   textInput: {
     backgroundColor: 'white',
+  },
+  picker: {
+    height: 50,
+    width: '100%',
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 5,
   },
 });
 
