@@ -1,5 +1,5 @@
 // registerForPushNotifications.js
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Platform, View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import firebase from '../firebaseConfig';
@@ -17,7 +17,7 @@ function AddReservationScreen() {
   const [reservationNumber, setReservationNumber] = useState('');
   const [location, setLocation] = useState('');
   const [notes, setNotes] = useState('');
-  const [notificationOffset, setNotificationOffset] = useState(60);
+  const [notificationOffset, setNotificationOffset] = useState(null);
 
     // State for date/time pickers
     const [isStartDatePickerVisible, setStartDatePickerVisibility] = useState(false);
@@ -77,9 +77,10 @@ function AddReservationScreen() {
 
       // Check if notification should be scheduled
       if (notificationOffset !== null) {
+
         // Calculate trigger time
         const triggerDate = new Date(startDate);
-        triggerDate.setMinutes(triggerDate.getMinutes() - notificationOffset); // Subtract offset
+        triggerDate.setMinutes(triggerDate.getMinutes() - notificationOffset);
 
         // Schedule a notification
         await Notifications.scheduleNotificationAsync({
@@ -133,7 +134,7 @@ function AddReservationScreen() {
         <TextInput
           style={styles.input}
           placeholder="End Date and Time"
-          value={endtDate ? new Date(endDate).toLocaleString() : ''}
+          value={endDate ? new Date(endDate).toLocaleString() : ''}
           editable={false}
         />
       </TouchableOpacity>
@@ -151,16 +152,17 @@ function AddReservationScreen() {
         onValueChange={(itemValue) => setNotificationOffset(itemValue)}
         style={styles.picker}
       >
-        <Picker.Item label="No Notification" value={null} />
+        <Picker.Item label="None" value={null} />
         <Picker.Item label="15 minutes before" value={15} />
         <Picker.Item label="30 minutes before" value={30} />
         <Picker.Item label="1 hour before" value={60} />
+        <Picker.Item label="3 hours before" value={180} />
         <Picker.Item label="1 day before" value={1440} /> 
       </Picker>
 
       <GooglePlacesAutocomplete
         placeholder='Search for a location'
-        onPress={(data, details = null) => {
+        onPress={(details = null) => {
           if (details && details.geometry && details.geometry.location) {
             const selectedLocation = {
               name: details.name,
