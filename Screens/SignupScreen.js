@@ -37,7 +37,7 @@ const SignupScreen = () => {
 
       //Login user & navigate to home screen
       await firebase.auth().signInWithEmailAndPassword(email, password);
-      navigation.navigate('Home');
+      navigation.navigate('Itinerary');
 
     } catch (error) {
         if (error.code === 'auth/email-already-in-use') {

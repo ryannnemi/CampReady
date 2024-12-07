@@ -110,7 +110,7 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace "com.campready"
+    namespace 'com.ryann.campready'
     defaultConfig {
         applicationId 'com.ryann.campready'
         minSdkVersion rootProject.ext.minSdkVersion

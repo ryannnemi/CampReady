@@ -5,6 +5,7 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import './gesture-handler';
 import AppNavigator from './AppNavigator';
 import * as Notifications from 'expo-notifications';
+import '@react-native/polyfills';
 
 const Drawer = createDrawerNavigator();
 
