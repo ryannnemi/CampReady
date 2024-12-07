@@ -1,8 +1,8 @@
 // ListScreen.js
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, Button, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { View, TextInput, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import firebase from '../firebaseConfig';
-import { getFirestore, collection, doc, getDoc, addDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import Checkbox from 'expo-checkbox';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
@@ -13,7 +13,6 @@ export default function ListScreen({ route, navigation }) {
   const { listId } = route.params || {}; 
   const [listName, setListName] = useState('');
   const [items, setItems] = useState([]);
-  const [item, setItem] = useState('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -119,7 +118,7 @@ export default function ListScreen({ route, navigation }) {
           >
             <Text style={[
               item.checked ? styles.itemTextChecked : styles.itemText,
-              { color: item.text ? 'black' : 'gray' }  // Conditional color
+              { color: item.text ? 'black' : 'gray' }
             ]}>
               {item.text || 'Tap to edit'}
             </Text>
@@ -132,7 +131,6 @@ export default function ListScreen({ route, navigation }) {
     </View>
   );
   
-
   return (
     <View style={styles.container}>
       {loading ? (

@@ -1,7 +1,6 @@
 // AddReservationScreen.js
 import React, { useState } from 'react';
-import { Platform, View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
+import { Platform, View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Alert, KeyboardAvoidingView, Modal, FlatList } from 'react-native';
 import firebase from '../firebaseConfig';
 import { collection, addDoc } from 'firebase/firestore';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
@@ -22,6 +21,8 @@ function AddReservationScreen() {
     // State for date/time pickers
     const [isStartDatePickerVisible, setStartDatePickerVisibility] = useState(false);
     const [isEndDatePickerVisible, setEndDatePickerVisibility] = useState(false);
+    const [isNotificationPickerVisible, setNotificationPickerVisible] = useState(false);
+    const [notificationLabel, setNotificationLabel] = useState('None');
   
     const showStartDatePicker = () => {
       setStartDatePickerVisibility(true);
@@ -47,6 +48,22 @@ function AddReservationScreen() {
     const handleEndDateConfirm = (date) => {
       setEndDate(date.toISOString());
       hideEndDatePicker();
+    };
+
+    // Map notification offset to labels
+    const notificationOptions = [
+      { label: 'None', value: null },
+      { label: '15 minutes before', value: 15 },
+      { label: '30 minutes before', value: 30 },
+      { label: '1 hour before', value: 60 },
+      { label: '3 hours before', value: 180 },
+      { label: '1 day before', value: 1440 },
+    ];
+
+    const handleSelectNotificationOption = (option) => {
+      setNotificationOffset(option.value);
+      setNotificationLabel(option.label);
+      setNotificationPickerVisible(false);
     };
 
     const requestNotificationPermissions = async () => {
@@ -128,91 +145,129 @@ function AddReservationScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Add Reservation</Text>
+    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>
+        <View style={styles.container}>
+          <Text style={styles.header}>Add Reservation</Text>
 
-      <TouchableOpacity onPressIn={showStartDatePicker} style={{ width: '100%' }}>
-        <TextInput
-          style={styles.input}
-          placeholder="Start Date and Time"
-          value={startDate ? new Date(startDate).toLocaleString() : ''}
-          editable={false}
-        />
-      </TouchableOpacity>
+          <TouchableOpacity onPressIn={showStartDatePicker} style={{ width: '100%' }}>
+            <TextInput
+              style={styles.input}
+              placeholder="Start Date and Time"
+              value={startDate ? new Date(startDate).toLocaleString() : ''}
+              editable={false}
+            />
+          </TouchableOpacity>
 
-      <DateTimePickerModal
-        isVisible={isStartDatePickerVisible}
-        mode="datetime"
-        onConfirm={handleStartDateConfirm}
-        onCancel={hideStartDatePicker}
-        display={Platform.OS === "ios" ? "spinner" : "default"}
-      />
+          <DateTimePickerModal
+            isVisible={isStartDatePickerVisible}
+            mode="datetime"
+            onConfirm={handleStartDateConfirm}
+            onCancel={hideStartDatePicker}
+            display={Platform.OS === "ios" ? "spinner" : "default"}
+          />
 
-      <TouchableOpacity onPressIn={showEndDatePicker} style={{ width: '100%' }}>
-        <TextInput
-          style={styles.input}
-          placeholder="End Date and Time"
-          value={endDate ? new Date(endDate).toLocaleString() : ''}
-          editable={false}
-        />
-      </TouchableOpacity>
+          <TouchableOpacity onPressIn={showEndDatePicker} style={{ width: '100%' }}>
+            <TextInput
+              style={styles.input}
+              placeholder="End Date and Time"
+              value={endDate ? new Date(endDate).toLocaleString() : ''}
+              editable={false}
+            />
+          </TouchableOpacity>
 
-      <DateTimePickerModal
-        isVisible={isEndDatePickerVisible}
-        mode="datetime"
-        onConfirm={handleEndDateConfirm}
-        onCancel={hideEndDatePicker}
-        display={Platform.OS === "ios" ? "spinner" : "default"}
-      />
+          <DateTimePickerModal
+            isVisible={isEndDatePickerVisible}
+            mode="datetime"
+            onConfirm={handleEndDateConfirm}
+            onCancel={hideEndDatePicker}
+            display={Platform.OS === "ios" ? "spinner" : "default"}
+          />
 
-      <Picker
-        selectedValue={notificationOffset}
-        onValueChange={(itemValue) => setNotificationOffset(itemValue)}
-        style={styles.picker}
-      >
-        <Picker.Item label="None" value={null} />
-        <Picker.Item label="15 minutes before" value={15} />
-        <Picker.Item label="30 minutes before" value={30} />
-        <Picker.Item label="1 hour before" value={60} />
-        <Picker.Item label="3 hours before" value={180} />
-        <Picker.Item label="1 day before" value={1440} /> 
-      </Picker>
+          
+          <TouchableOpacity
+            style={styles.input}
+            onPress={() => setNotificationPickerVisible(true)}
+          >
+            <Text>{notificationLabel}</Text>
+          </TouchableOpacity>
 
-      <GooglePlacesAutocomplete
-        placeholder='Search for a location'
-        onPress={(data, details = null) => {
-          if (details && details.geometry && details.geometry.location) {
-            const selectedLocation = {
-              name: details.name,
-              address: details.formatted_address,
-              latitude: details.geometry.location.lat,
-              longitude: details.geometry.location.lng 
-            };
-            setLocation(selectedLocation);
-            console.log('name: '&location.name);
-          }
-        }}
-        query={{
-          key: 'AIzaSyCgOZfEz_a58wrMoHliVwght6Bu1AznFzo',
-          language: 'en',
-        }}
-        fetchDetails={true}         
-        />
-      <TextInput
-        style={styles.input}
-        placeholder="Reservation Number"
-        value={reservationNumber}
-        onChangeText={setReservationNumber}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Notes"
-        value={notes}
-        onChangeText={setNotes}
-      />
+          <Modal
+            visible={isNotificationPickerVisible}
+            transparent={true}
+            animationType="slide"
+            onRequestClose={() => setNotificationPickerVisible(false)}
+          >
+            <View style={styles.optionsContainer}>
+              <FlatList
+                data={notificationOptions}
+                keyExtractor={(item) => item.label}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    onPress={() => handleSelectNotificationOption(item)}
+                    style={styles.optionItem}
+                  >
+                    <View style={styles.radioButton}>
+                      {notificationOffset === item.value && (
+                        <View style={styles.radioButtonSelected} />
+                      )}
+                    </View>
+                    <Text style={styles.optionText}>{item.label}</Text>
+                  </TouchableOpacity>
+                )}
+              />
 
-      <Button title="Add Reservation" onPress={handleAddReservation} />
-    </View>
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => setNotificationPickerVisible(false)}
+              >
+                <Text style={styles.closeButtonText}>Close</Text>
+              </TouchableOpacity>
+
+            </View>
+          </Modal>
+
+          <GooglePlacesAutocomplete
+            placeholder="Search for a location"
+            onPress={(data, details = null) => {
+              if (details && details.geometry && details.geometry.location) {
+                const selectedLocation = {
+                  name: details.name,
+                  address: details.formatted_address,
+                  latitude: details.geometry.location.lat,
+                  longitude: details.geometry.location.lng,
+                };
+                setLocation(selectedLocation);
+              }
+            }}
+            query={{
+              key: 'AIzaSyCgOZfEz_a58wrMoHliVwght6Bu1AznFzo',
+              language: 'en',
+            }}
+            fetchDetails={true}
+            styles={{
+              container: { zIndex: 1 },
+              textInputContainer: { zIndex: 1 },
+              textInput: { zIndex: 1 },
+            }}
+          />
+
+          <TextInput
+            style={styles.input}
+            placeholder="Reservation Number"
+            value={reservationNumber}
+            onChangeText={setReservationNumber}
+          />
+          
+          <TextInput
+            style={styles.input}
+            placeholder="Notes"
+            value={notes}
+            onChangeText={setNotes}
+          />
+
+          <Button title="Add Reservation" onPress={handleAddReservation} />
+        </View>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -250,6 +305,53 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderWidth: 1,
     borderRadius: 5,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  optionsContainer: {
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    marginTop: 75,
+    padding: 20,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+  },
+  optionItem: {
+    flexDirection: 'row',
+    marginBottom: 15,
+  },
+  radioButton: {
+    height: 20,
+    width: 20,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: '#007AFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 10,
+  },
+  radioButtonSelected: {
+    height: 10,
+    width: 10,
+    borderRadius: 5,
+    backgroundColor: '#007AFF',
+  },
+  optionText: {
+    fontSize: 16,
+  },
+  closeButton: {
+    backgroundColor: '#007AFF',
+    borderRadius: 5,
+    padding: 10,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  closeButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
   },
 });
 
