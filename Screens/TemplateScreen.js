@@ -95,7 +95,7 @@ export default function TemplateScreen({ navigation }) {
   
         setLoading(false);
         // Navigate to the user's lists or the ListScreen
-        navigation.navigate('View Lists');
+        navigation.navigate('My Lists');
       } else {
         console.log('No user is signed in');
       }

@@ -11,8 +11,10 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.ryann.campready"
     },
     "android": {
       "adaptiveIcon": {
@@ -27,7 +29,7 @@
     },
     "plugins": [
       "@react-native-firebase/app",
-      "@react-native-firebase/auth",      
+      "@react-native-firebase/auth",
       [
         "expo-build-properties",
         {
@@ -36,6 +38,12 @@
           }
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "6e2197c3-cb62-420f-ad3e-0061a94cfcfd"
+      }
+    },
+    "owner": "ryannnemi"
   }
 }

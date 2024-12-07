@@ -1,3 +1,4 @@
+// registerForPushNotifications.js
 import * as Notifications from 'expo-notifications';
 import * as Device from 'expo-device'; 
 import { Platform } from 'react-native';
@@ -18,6 +19,7 @@ export async function registerForPushNotificationsAsync() {
     return;
   }
 
+  // Request notification permissions
   const { status: existingStatus } = await Notifications.getPermissionsAsync();
   let finalStatus = existingStatus;
 
@@ -31,9 +33,26 @@ export async function registerForPushNotificationsAsync() {
     return;
   }
 
+  // Get Expo push token
   token = (await Notifications.getExpoPushTokenAsync()).data;
   console.log('Expo Push Token:', token);
 
+  // Get APNs token for standalone iOS apps
+  if (Platform.OS === 'ios') {
+    const apnsToken = await Notifications.getDevicePushTokenAsync();
+    console.log('APNs Token:', apnsToken);
+  }
+
+  if (Constants.easConfig?.projectId) {
+    token = (
+      await Notifications.getExpoPushTokenAsync({
+        projectId: '6e2197c3-cb62-420f-ad3e-0061a94cfcfd', 
+      })
+    ).data;
+    console.log(token);
+  }
+
+  // Configure notification channel for Android
   if (Platform.OS === 'android') {
     await Notifications.setNotificationChannelAsync('default', {
       name: 'default',
@@ -43,6 +62,7 @@ export async function registerForPushNotificationsAsync() {
     });
   }
 
+  // Store token in Firestore
   const user = auth.currentUser;
 
   if (!user) {

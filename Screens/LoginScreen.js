@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, TextInput, TouchableOpacity, Button, Text, StyleSheet, Alert } from 'react-native';
 import firebase from '../firebaseConfig';
 import { useNavigation } from '@react-navigation/native';
+import * as Notifications from 'expo-notifications';
 
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigation = useNavigation();
-
  
 const handleLogin = async () => {
      try {
@@ -18,7 +18,36 @@ const handleLogin = async () => {
      } catch (error) {
        console.error(error);
      }
+
+     // For testing with immediate notifications
+     await Notifications.scheduleNotificationAsync({
+      content: {
+        title: 'Test Notification',
+        body: 'This is a test notification triggered locally.',
+      },
+      trigger: { seconds: 5 }, // Fires in 5 seconds
+    });
+    console.log('Notification scheduled!');
    }; 
+
+   // Clear notifications on login
+   useEffect(() => {
+    const clearNotificationsOnStart = async () => {
+      try {
+        // Dismiss all visible notifications from the notification tray
+        await Notifications.dismissAllNotificationsAsync();
+        console.log('Dismissed all triggered notifications.');
+    
+        // Cancel all scheduled notifications
+        await Notifications.cancelAllScheduledNotificationsAsync();
+        console.log('Cleared all scheduled notifications.');
+      } catch (error) {
+        console.error('Error clearing notifications on start: ', error);
+      }
+    };
+  
+    clearNotificationsOnStart();
+  }, []);
   
   return (
     <View style={styles.container}>

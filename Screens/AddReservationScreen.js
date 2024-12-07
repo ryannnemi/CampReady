@@ -1,4 +1,4 @@
-// registerForPushNotifications.js
+// AddReservationScreen.js
 import React, { useState } from 'react';
 import { Platform, View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
@@ -74,6 +74,7 @@ function AddReservationScreen() {
       setReservationNumber('');
       setLocation('');
       setNotes('');
+      
 
       // Check if notification should be scheduled
       if (notificationOffset !== null) {
@@ -89,7 +90,7 @@ function AddReservationScreen() {
             body: `You have a reservation at ${location.name} on ${new Date(startDate).toLocaleString()}`,
           },
           trigger: triggerDate,
-        });
+        });              
 
       console.log('Notification scheduled!');
       } else {
@@ -162,7 +163,7 @@ function AddReservationScreen() {
 
       <GooglePlacesAutocomplete
         placeholder='Search for a location'
-        onPress={(details = null) => {
+        onPress={(data, details = null) => {
           if (details && details.geometry && details.geometry.location) {
             const selectedLocation = {
               name: details.name,
@@ -170,8 +171,8 @@ function AddReservationScreen() {
               latitude: details.geometry.location.lat,
               longitude: details.geometry.location.lng 
             };
-
             setLocation(selectedLocation);
+            console.log('name: '&location.name);
           }
         }}
         query={{
