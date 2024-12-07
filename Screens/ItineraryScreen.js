@@ -7,6 +7,7 @@ import axios from 'axios';
 import firebase from '../firebaseConfig';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
+import { format } from 'date-fns'
 import { getRecommendedItems } from '../Functions/getRecommendedItems';
 import { openNavigationApp } from '../Functions/openNavigationApp';
 
@@ -118,6 +119,7 @@ const ItineraryScreen = () => {
       <View style={styles.itemContainer}>
         <View style={styles.leftContainer}>
           <Text>Location: {item.location.name}</Text>
+          <Text>Start: {format(item.startDate, 'HH:mm')}</Text>
 
           <Text>Reservation Number: {item.reservationNumber}</Text>
 

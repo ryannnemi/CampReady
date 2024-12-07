@@ -18,16 +18,6 @@ const handleLogin = async () => {
      } catch (error) {
        console.error(error);
      }
-
-     // For testing with immediate notifications
-     await Notifications.scheduleNotificationAsync({
-      content: {
-        title: 'Test Notification',
-        body: 'This is a test notification triggered locally.',
-      },
-      trigger: { seconds: 5 }, // Fires in 5 seconds
-    });
-    console.log('Notification scheduled!');
    }; 
 
    // Clear notifications on login

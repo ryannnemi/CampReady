@@ -78,9 +78,10 @@ function ReservationScreen({navigation}) {
   const renderItem = ({ item }) => (
     <View style={styles.item}>
       <View style={styles.itemContent}>
-        <Text style={styles.reservationNumber}>Reservation ID: {item.reservationNumber}</Text>
-        <Text style={styles.location}>Location: {item.location?.name || 'No location provided'}</Text>
-        <Text style={styles.date}>Date: {format(item.startDate, 'MM/dd/yyyy HH:mm')}</Text>
+        <Text style={styles.reservationNumber}>{item.location?.name || 'No location provided'}</Text>
+        <Text style={styles.location}>Reservation ID: {item.reservationNumber}</Text>
+        <Text style={styles.date}>Start: {format(item.startDate, 'MM/dd/yyyy HH:mm')}</Text>
+        <Text style={styles.date}>End: {format(item.endDate, 'MM/dd/yyyy HH:mm')}</Text>
       </View>
       <Icon 
         name="trash" 

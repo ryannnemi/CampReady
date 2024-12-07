@@ -49,6 +49,18 @@ function AddReservationScreen() {
       hideEndDatePicker();
     };
 
+    const requestNotificationPermissions = async () => {
+      const { status } = await Notifications.getPermissionsAsync();
+      if (status !== 'granted') {
+        const { status: newStatus } = await Notifications.requestPermissionsAsync();
+        if (newStatus !== 'granted') {
+          alert('Permission to receive notifications was denied');
+          return false;
+        }
+      }
+      return true;
+    };
+
   const handleAddReservation = async () => {
     try {
       const user = auth.currentUser; 
@@ -74,8 +86,13 @@ function AddReservationScreen() {
       setReservationNumber('');
       setLocation('');
       setNotes('');
-      
 
+      // Request notification permission before scheduling
+      const isPermitted = await requestNotificationPermissions();
+        if (!isPermitted) {
+      return;
+    }
+      
       // Check if notification should be scheduled
       if (notificationOffset !== null) {
 
@@ -86,7 +103,7 @@ function AddReservationScreen() {
         // Schedule a notification
         await Notifications.scheduleNotificationAsync({
           content: {
-            title: 'Upcoming Reservation Reminder',
+            title: "You've got plans!",
             body: `You have a reservation at ${location.name} on ${new Date(startDate).toLocaleString()}`,
           },
           trigger: triggerDate,
