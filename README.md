@@ -23,17 +23,7 @@ CampReady is a mobile application designed to help users create and manage perso
 - **Expo Sharing**: To share checklists through social media or messaging platforms.
 
 ## Installation
+- **Android**: Scan the QR code below or navigate to this [link](https://expo.dev/accounts/ryannnemi/projects/CampReady/builds/90db129d-07f6-410f-a0fb-2e3a2701d242)
 
-### Prerequisites
+   ![image](https://github.com/user-attachments/assets/a6868c5c-62c9-46ca-999f-89cf2054fda5)
 
-Make sure you have the following installed on your machine:
-- **Node.js**: https://nodejs.org/
-- **Expo CLI**: Install Expo CLI globally by running `npm install -g expo-cli`.
-- **Firebase Project**: Set up a Firebase project and configure your Firebase SDK in the project.
-
-### Steps
-
-1. Clone the repository to your local machine:
-   ```bash
-   git clone https://github.com/ryannnemi/campready.git
-   cd campready
